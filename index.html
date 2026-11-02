@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/evio-logo-icon.png">
+  <title>EVIO — Smart EV Charging & AI Rewards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css?v=outcrowd_clean_v3">
+  
+</head>
+<body>
+
+  <!-- ═══════════════════════════ GALAXY STARS OVERLAY ═══════════════════════════ -->
+  <div class="stars-container">
+    <div class="stars-layer-small"></div>
+    <div class="stars-layer-medium"></div>
+    <div class="stars-layer-large"></div>
+  </div>
+
+  <!-- ═══════════════════════════ SUBTLE FLOATING PARTICLES ═══════════════════════════ -->
+  <div class="particles-container">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- ═══════════════════════════ TOAST CONTAINER ═══════════════════════════ -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ═══════════════════════════ MOBILE SIDEBAR TOGGLE ═══════════════════════════ -->
+  <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" onclick="toggleMobileSidebar()">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+  <!-- ════════════════════════════════════════════════
+       PUBLIC NAV (Only visible when landing or plans public is active)
+  ════════════════════════════════════════════════ -->
+  <nav id="public-nav">
+    <div class="nav-logo" onclick="showPage('landing')" title="EVIO — Smart EV Charging">
+      <img src="assets/evio-logo-wordmark.png" alt="EVIO" class="nav-logo-img">
+    </div>
+    <div class="nav-links">
+      <a href="#benefits" onclick="scrollToSection('benefits')">Benefits</a>
+      <a href="#how-it-works" onclick="scrollToSection('how-it-works')">How It Works</a>
+      <a href="#pricing" onclick="scrollToSection('pricing')">Pricing</a>
+      <a href="map.html">Map</a>
+      <a href="#my-stats" onclick="openMyStats(event)">My Stats</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Shown when logged out -->
+      <div class="nav-guest" id="navGuestActions">
+        <button class="btn btn-primary btn-sm" onclick="showPage('auth'); toggleAuthTab('signup');">Get Started</button>
+      </div>
+
+      <!-- Shown when logged in: profile picture + menu -->
+      <div class="nav-profile" id="navProfile" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button class="btn btn-primary btn-sm" onclick="showPage('dashboard')" style="display:flex;align-items:center;gap:6px;padding:6px 14px;font-size:13px;" title="Go to Dashboard">
+            <i class="fas fa-chart-pie"></i> Dashboard
+          </button>
+          <button class="nav-avatar-btn" id="navAvatarBtn" onclick="toggleProfileDropdown(event)" aria-label="Account menu">
+            <span class="nav-avatar" id="navAvatar">U</span>
+          </button>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown" onclick="event.stopPropagation()">
+          <div class="pd-head">
+            <div class="nav-avatar pd-avatar" id="pd-avatar">U</div>
+            <div class="pd-head-info">
+              <div class="pd-name" id="pd-name">User</div>
+              <div class="pd-email" id="pd-email"></div>
+            </div>
+          </div>
+          <button class="pd-item" onclick="openUserModal('profile')"><i class="fas fa-user-cog"></i> Profile Settings</button>
+          <button class="pd-item" onclick="openUserModal('rewards')"><i class="fas fa-gift"></i> Rewards <span class="pd-badge" id="pd-points-badge">0 pts</span></button>
+          <button class="pd-item" onclick="openUserModal('subscription')"><i class="fas fa-crown"></i> Subscription Details</button>
+          <button class="pd-item" onclick="openUserModal('bookings')"><i class="fas fa-calendar-check"></i> Booking Status</button>
+          <div class="pd-divider"></div>
+          <button class="pd-item danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+    <button class="nav-hamburger" onclick="handleNavHamburger()"><i class="fas fa-bars"></i></button>
+  </nav>
+
+  <!-- ════════════════════════════════════════════════
+       1. LANDING PAGE
+  ════════════════════════════════════════════════ -->
+  <div id="page-landing" class="page active">
+    <!-- Hero (100% Original EVIO Content with Outcrowd UI & Dynamic Animations) -->
+    <section class="hero" id="heroSection">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-glow hero-glow-1"></div>
+      <div class="hero-glow hero-glow-2"></div>
+      <canvas id="heroParticleCanvas" class="hero-particle-canvas" aria-hidden="true"></canvas>
+      <div class="hero-mesh-aurora" aria-hidden="true"></div>
+      
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Charge Smart. <br>
+          <span class="gradient-text">Earn Rewards.</span> <br>
+          Drive Green.
+        </h1>
+
+        <p class="hero-subtitle">
+          Discover a smarter way to charge your electric vehicle. Find nearby stations, book slots instantly, earn automated cashback and reward points on every kWh charged, and drive towards a greener future.
+        </p>
+
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="startCharging()">
+            <i class="fas fa-bolt"></i> Start Charging Free
+          </button>
+          <button class="btn btn-outline" onclick="scrollToSection('how-it-works')">
+            <i class="fas fa-play" style="font-size:11px;"></i> See How It Works
+          </button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-col">
+            <div class="hero-stat-val" data-counter="50000" data-suffix="K+">50K+</div>
+            <div class="hero-stat-label">EV Users</div>
+          </div>
+          <div class="stat-col">
+            <div class="hero-stat-val" data-counter="1200" data-suffix="+">1,200+</div>
+            <div class="hero-stat-label">Charging Stations</div>
+          </div>
+          <div class="stat-col">
+            <div class="hero-stat-val" data-counter="40" data-prefix="₹">₹40</div>
+            <div class="hero-stat-label">Avg. Cashback/Session</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Visual (Original EV Card Mockup with Outcrowd Glass Terminal & 3D Tilt/Float) -->
+      <div class="hero-visual">
+        <div class="ev-card-wrapper" id="heroCardWrapper">
+          <div class="console-glow-underlay"></div>
+          <div class="ev-card-mockup border-beam-active" id="heroVisualCard">
+            <!-- Card Top Header -->
+            <div class="ev-card-top">
+              <div>
+                <div style="font-size:12px;color:var(--text3);font-weight:600;letter-spacing:0.5px;">Active Session</div>
+                <div style="font-size:16px;font-weight:700;margin-top:2px;color:#ffffff;">Station 01 — Bhawarkua EV Hub</div>
+              </div>
+              <span class="badge badge-green">
+                <span class="live-dot-pulse"></span> Live
+              </span>
+            </div>
+
+            <!-- Circular Battery Charging Gauge -->
+            <div class="ev-charge-ring">
+              <svg class="radar-svg" viewBox="0 0 120 120">
+                <circle class="radar-track" cx="60" cy="60" r="48"></circle>
+                <circle class="radar-progress" id="chargeCircleProgress" cx="60" cy="60" r="48"></circle>
+              </svg>
+              <div class="radar-center-info">
+                <div class="radar-bolt"><img src="assets/evio-logo-icon.png" alt="EVIO Bolt" class="radar-logo-icon"></div>
+                <div class="ev-charge-pct" id="liveChargePct">72%</div>
+                <div class="radar-label">BATTERY LEVEL</div>
+              </div>
+            </div>
+
+            <!-- Battery Level Linear Progress Bar -->
+            <div style="text-align:center;font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500;">Battery Level</div>
+            <div class="progress-track" style="margin-bottom:20px;">
+              <div class="progress-fill" style="width:72%"></div>
+            </div>
+
+            <!-- 4 Original Stat Items -->
+            <div class="ev-card-info">
+              <div class="ev-info-item">
+                <div class="ev-info-label">Time Left</div>
+                <div class="ev-info-val">18 min</div>
+              </div>
+              <div class="ev-info-item">
+                <div class="ev-info-label">Energy</div>
+                <div class="ev-info-val">14.6 kWh</div>
+              </div>
+              <div class="ev-info-item">
+                <div class="ev-info-label">Cost</div>
+                <div class="ev-info-val">₹182</div>
+              </div>
+              <div class="ev-info-item">
+                <div class="ev-info-label">Cashback</div>
+                <div class="ev-info-val" style="color:var(--blue-electric);">₹34</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits (100% Original EVIO Content with Outcrowd Visual Design) -->
+    <section class="section" id="benefits">
+      <div class="section-header">
+        <div class="section-label">Why EVIO</div>
+        <h2>The Smarter Way to <span class="gradient-text">Charge</span></h2>
+        <p>A complete ecosystem connecting EV users, advertisers, and station owners in one intelligent platform.</p>
+      </div>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="bento-bg-glow glow-green"></div>
+          <div class="benefit-icon green"><i class="fas fa-coins"></i></div>
+          <h3>Charging Rewards &amp; Cashback</h3>
+          <p>Earn real cashback credits &amp; loyalty points automatically with every kilowatt-hour charged. Reduce your charging costs by up to 40%.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="bento-bg-glow glow-blue"></div>
+          <div class="benefit-icon blue"><i class="fas fa-map-marker-alt"></i></div>
+          <h3>Smart Station Finder</h3>
+          <p>Find nearby charging stations with real-time slot availability, pricing, and route guidance in seconds.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="bento-bg-glow glow-cyan"></div>
+          <div class="benefit-icon cyan"><i class="fas fa-calendar-check"></i></div>
+          <h3>Advance Booking &amp; Subscription Plans</h3>
+          <p>Never wait in line. Pre-book your charging slot up to 7 days in advance, and save more with monthly Pro and Elite plans.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section hiw-section" id="how-it-works">
+      <!-- Ambient Glow Behind Video -->
+      <div class="hiw-ambient-glow glow-cyan"></div>
+      <div class="hiw-ambient-glow glow-blue"></div>
+
+      <div class="section-header">
+        <div class="section-label">Process</div>
+        <h2>How It <span class="gradient-text">Works</span></h2>
+        <p>Getting started with EVIO is simple, eco-friendly, and highly rewarding. Watch the interactive animation below.</p>
+      </div>
+
+      <!-- Cinema Glass Video Animation Showcase -->
+      <div class="hiw-showcase-container">
+        <div class="hiw-video-frame">
+          <!-- Glass Topbar with Cyber Control Dots & Status Pill -->
+          <div class="hiw-frame-topbar">
+            <div class="hiw-frame-dots">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <div class="hiw-frame-title">
+              <i class="fas fa-bolt" style="color:var(--blue-electric); margin-right:6px;"></i> EVIO Ecosystem • Smart Charge &amp; Earn Journey
+            </div>
+            <div class="hiw-frame-badge">
+              <span class="live-dot-pulse"></span> Dynamic Animation
+            </div>
+          </div>
+
+          <!-- Video Canvas Stage -->
+                    <div class="crystal-fragment crystal-3" aria-hidden="true">
+            <svg width="34" height="40" viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="17,2 32,11 27,35 17,38 2,27 6,8" fill="rgba(11,16,24,0.65)" stroke="rgba(130,155,190,0.2)" stroke-width="0.8"/>
+              <polygon points="17,2 32,11 20,19 17,38" fill="rgba(57,139,255,0.18)" stroke="rgba(245,246,248,0.25)" stroke-width="0.7"/>
+              <polygon points="20,19 32,11 27,35 17,38" fill="rgba(105,183,255,0.2)" stroke="rgba(245,246,248,0.3)" stroke-width="0.7"/>
+            </svg>
+          </div>
+          <div class="hiw-video-wrapper">
+            <video 
+              id="hiwAnimationVideo" 
+              autoplay 
+              loop 
+              muted 
+              playsinline 
+              preload="auto"
+            >
+              <source src="assets/gemini_generated_video_180bba54.mp4" type="video/mp4">
+              <source src="assets/how_it_works_animation.mp4" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+            
+            <div class="hiw-video-vignette"></div>
+
+            <!-- Floating Sleek Control Bar -->
+            <div class="hiw-video-controls-bar">
+              <div class="hiw-ctrl-left">
+                <button class="hiw-ctrl-btn" id="hiwPlayPauseBtn" onclick="toggleHiwVideoPlay()" title="Pause/Resume Animation">
+                  <i class="fas fa-pause"></i>
+                </button>
+                <button class="hiw-ctrl-btn" onclick="restartHiwVideo()" title="Restart Animation">
+                  <i class="fas fa-rotate-left"></i>
+                </button>
+                <span class="hiw-status-chip">
+                  <i class="fas fa-circle-play" style="color:var(--blue-electric)"></i> Auto-Looping Animation
+                </span>
+              </div>
+              <div class="hiw-ctrl-right">
+                <button class="hiw-ctrl-btn" onclick="toggleHiwFullscreen()" title="Fullscreen View">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Step Interactive Cards -->
+      <div class="hiw-steps">
+        <div class="hiw-step">
+          <div class="hiw-step-card-glow"></div>
+          <div class="hiw-num">
+            <span>1</span>
+            <svg class="hiw-step-icon" viewBox="0 0 28 28" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="hiw-icon-fb" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22D3EE"/>
+                  <stop offset="100%" stop-color="#2684FF"/>
+                </linearGradient>
+              </defs>
+              <path d="M7 23H12.5C15 23 16.5 21 16.5 19C16.5 17 18 15 20.5 15H22.5" stroke="url(#hiw-icon-fb)" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="5" cy="23" r="2.2" fill="#22D3EE"/>
+              <circle cx="5" cy="23" r="1" fill="#080D14"/>
+              <circle cx="23" cy="15" r="2.2" fill="#22D3EE"/>
+              <path d="M10 3C7 3 4.5 5.5 4.5 8.5C4.5 12.8 10 17.5 10 17.5C10 17.5 15.5 12.8 15.5 8.5C15.5 5.5 13 3 10 3Z" fill="url(#hiw-icon-fb)"/>
+              <circle cx="10" cy="8.5" r="2.2" fill="#080D14"/>
+            </svg>
+          </div>
+          <h3>Find &amp; Book</h3>
+          <p>Open the app, locate a charging station nearby, and pre-book your slot to skip lines.</p>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-card-glow"></div>
+          <div class="hiw-num">
+            <span>2</span>
+            <svg class="hiw-step-icon" viewBox="0 0 28 28" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="hiw-icon-ps" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22D3EE"/>
+                  <stop offset="100%" stop-color="#2684FF"/>
+                </linearGradient>
+              </defs>
+              <rect x="3.5" y="4" width="9.5" height="18" rx="2.5" stroke="url(#hiw-icon-ps)" stroke-width="2" fill="rgba(8,13,20,0.7)"/>
+              <line x1="2" y1="24" x2="14.5" y2="24" stroke="url(#hiw-icon-ps)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9.2 8L6.8 13H9.2L8 17.5L12 11.8H9.8L11 8H9.2Z" fill="url(#hiw-icon-ps)"/>
+              <path d="M13 18.5C15.5 18.5 17 22 20 22C22.2 22 23.5 20.5 23.5 18.5V14.5" stroke="url(#hiw-icon-ps)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M21 14.5H26V11.2C26 9.8 24.9 9 23.5 9C22.1 9 21 9.8 21 11.2V14.5Z" fill="url(#hiw-icon-ps)"/>
+              <line x1="22.2" y1="9" x2="22.2" y2="6" stroke="url(#hiw-icon-ps)" stroke-width="1.8" stroke-linecap="round"/>
+              <line x1="24.8" y1="9" x2="24.8" y2="6" stroke="url(#hiw-icon-ps)" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>Plug &amp; Start</h3>
+          <p>Arrive at the station, connect your EV, scan the QR code to start charging safely.</p>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-card-glow"></div>
+          <div class="hiw-num">
+            <span>3</span>
+            <svg class="hiw-step-icon" viewBox="0 0 28 28" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="hiw-icon-ce" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22D3EE"/>
+                  <stop offset="100%" stop-color="#2684FF"/>
+                </linearGradient>
+              </defs>
+              <line x1="5" y1="7" x2="7.8" y2="8.8" stroke="#22D3EE" stroke-width="2.2" stroke-linecap="round"/>
+              <line x1="3" y1="15.5" x2="6" y2="15.5" stroke="#22D3EE" stroke-width="2.2" stroke-linecap="round"/>
+              <line x1="21.5" y1="6.5" x2="24" y2="4.5" stroke="#22D3EE" stroke-width="2.2" stroke-linecap="round"/>
+              <line x1="21" y1="18.5" x2="24.5" y2="20" stroke="#22D3EE" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M16 2.5L7.5 13.5H13.8L11 25.5L21.5 11.8H15.2L16 2.5Z" fill="url(#hiw-icon-ce)"/>
+            </svg>
+          </div>
+          <h3>Charge &amp; Earn</h3>
+          <p>Charge your vehicle and automatically accumulate reward points &amp; instant cashback directly into your wallet.</p>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-step-card-glow"></div>
+          <div class="hiw-num">
+            <span>4</span>
+            <svg class="hiw-step-icon" viewBox="0 0 28 28" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="hiw-icon-rc" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22D3EE"/>
+                  <stop offset="100%" stop-color="#2684FF"/>
+                </linearGradient>
+              </defs>
+              <rect x="2.8" y="9" width="18.5" height="15" rx="3" stroke="url(#hiw-icon-rc)" stroke-width="2" fill="rgba(8,13,20,0.7)"/>
+              <line x1="3.2" y1="13.5" x2="17.5" y2="13.5" stroke="url(#hiw-icon-rc)" stroke-width="1.6"/>
+              <path d="M16.5 13.5H21.5C23 13.5 24 14.5 24 16.2C24 17.8 23 18.8 21.5 18.8H16.5V13.5Z" fill="url(#hiw-icon-rc)"/>
+              <circle cx="21" cy="16.2" r="1.3" fill="#080D14"/>
+              <circle cx="20.5" cy="7.5" r="5.5" fill="#22D3EE"/>
+              <path d="M18.5 5.3H22.5" stroke="#080D14" stroke-width="1.15" stroke-linecap="round"/>
+              <path d="M18.5 6.8H22.0" stroke="#080D14" stroke-width="1.15" stroke-linecap="round"/>
+              <path d="M19.5 5.3V7.8C20.7 7.8 21.5 8.4 21.5 9.1C21.5 9.8 20.7 10.3 19.5 10.3L22.0 12.7" stroke="#080D14" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Redeem Credits</h3>
+          <p>Use your earned cashback points to pay your charging bill or buy vouchers from top brands.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ PRICING (inline scroll section) -->
+    <section class="section" id="pricing">
+      <div class="section-header">
+        <div class="section-label">Pricing Plans</div>
+        <h2>Unlock Maximum <span class="gradient-text">Benefits</span></h2>
+        <p>Save more, get faster charging speeds, and receive extra charging reward multipliers by selecting the right membership.</p>
+      </div>
+      <div class="plans-grid" style="margin-bottom: 50px;">
+        <!-- Pro -->
+        <div class="plan-card featured">
+          <div class="plan-name">Pro Driver</div>
+          <div class="plan-price">₹299</div>
+          <div class="plan-period">per month</div>
+          <p style="color: var(--text2); font-size: 13px; margin-bottom: 20px;">Best value for daily commuters. Higher rewards, lower bills.</p>
+          <div class="plan-features">
+            <div class="plan-feature"><i class="fas fa-check"></i> Fast DC Charging Ports</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 1.5x Charging Rewards Multiplier</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Unlimited Bookings</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 5% Discount on base rates</div>
+            <div class="plan-feature no"><i class="fas fa-times"></i> Zero Booking Cancellation Fees</div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;" onclick="handlePlanClick()">Subscribe Now</button>
+        </div>
+        <!-- Elite -->
+        <div class="plan-card">
+          <div class="plan-name">Elite Driver</div>
+          <div class="plan-price">₹599</div>
+          <div class="plan-period">per month</div>
+          <p style="color: var(--text2); font-size: 13px; margin-bottom: 20px;">For EV enthusiasts who require top-tier charging speed &amp; cashbacks.</p>
+          <div class="plan-features">
+            <div class="plan-feature"><i class="fas fa-check"></i> Ultra-Fast Charging Nodes</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 2.0x Charging Rewards Multiplier</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Unlimited Bookings &amp; Zero Fees</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 10% Discount on base rates</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Exclusive Partner Offers</div>
+          </div>
+          <button class="btn btn-outline" style="width: 100%;" onclick="handlePlanClick()">Go Elite</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Public Footer -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo" style="margin-bottom:16px;">
+            <img src="assets/evio-logo-wordmark.png" alt="EVIO" class="footer-logo-img">
+          </div>
+          <p>EVIO is building the future of eco-smart EV infrastructure, making green charging cheaper and more interactive.</p>
+          <div class="footer-social">
+            <div class="social-btn"><i class="fab fa-twitter"></i></div>
+            <div class="social-btn"><i class="fab fa-facebook-f"></i></div>
+            <div class="social-btn"><i class="fab fa-instagram"></i></div>
+            <div class="social-btn"><i class="fab fa-linkedin-in"></i></div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h5>Services</h5>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="navToStationBooking()">Station Booking</a></li>
+            <li><a href="javascript:void(0)" onclick="navToChargingRewards()">Charging Rewards</a></li>
+            <li><a href="#pricing" onclick="scrollToSection('pricing')">Pricing Plans</a></li>
+            <li><a href="javascript:void(0)" onclick="navToAdmin()">Corporate Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Company</h5>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Eco Mission</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Legal</h5>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Use</a></li>
+            <li><a href="#">Reward Standards</a></li>
+            <li><a href="#">Safety Guides</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 EVIO Inc. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color: var(--danger)"></i> for Green Mobility</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       2. PUBLIC PLANS PAGE
+  ════════════════════════════════════════════════ -->
+  <div id="page-plans-public" class="page section">
+    <div style="max-width: 1200px; margin: 0 auto; padding-top: 40px;">
+      <div class="section-header">
+        <div class="section-label">Pricing Plans</div>
+        <h2>Unlock Maximum <span class="gradient-text">Benefits</span></h2>
+        <p>Save more, get faster charging speeds, and receive extra charging reward multipliers by selecting the right membership.</p>
+      </div>
+
+      <div class="plans-grid" style="margin-bottom: 50px;">
+        <!-- Pro -->
+        <div class="plan-card featured">
+          <div class="plan-name">Pro Driver</div>
+          <div class="plan-price">₹299</div>
+          <div class="plan-period">per month</div>
+          <p style="color: var(--text2); font-size: 13px; margin-bottom: 20px;">Best value for daily commuters. Higher rewards, lower bills.</p>
+          <div class="plan-features">
+            <div class="plan-feature"><i class="fas fa-check"></i> Fast DC Charging Ports</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 1.5x Charging Rewards Multiplier</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Unlimited Bookings</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 5% Discount on base rates</div>
+            <div class="plan-feature no"><i class="fas fa-times"></i> Zero Booking Cancellation Fees</div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;" onclick="handlePlanClick()">Subscribe Now</button>
+        </div>
+
+        <!-- Premium -->
+        <div class="plan-card">
+          <div class="plan-name">Elite Driver</div>
+          <div class="plan-price">₹599</div>
+          <div class="plan-period">per month</div>
+          <p style="color: var(--text2); font-size: 13px; margin-bottom: 20px;">For EV enthusiasts who require top-tier charging speed & cashbacks.</p>
+          <div class="plan-features">
+            <div class="plan-feature"><i class="fas fa-check"></i> Ultra-Fast Charging Nodes</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 2.0x Charging Rewards Multiplier</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Unlimited Bookings & Zero Fees</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> 10% Discount on base rates</div>
+            <div class="plan-feature"><i class="fas fa-check"></i> Exclusive Partner Offers</div>
+          </div>
+          <button class="btn btn-outline" style="width: 100%;" onclick="handlePlanClick()">Go Elite</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 40px; overflow-x: auto;">
+        <h3 style="margin-bottom: 20px;">Detailed Plan Comparison</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Pro</th>
+              <th>Elite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Monthly Fee</td>
+              <td>₹299</td>
+              <td>₹599</td>
+            </tr>
+            <tr>
+              <td>Charging Rewards Multiplier</td>
+              <td>1.5x</td>
+              <td>2.0x</td>
+            </tr>
+            <tr>
+              <td>Booking Cap</td>
+              <td>Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td>Max Charging Power</td>
+              <td>Up to 50 kW</td>
+              <td>Up to 120+ kW</td>
+            </tr>
+            <tr>
+              <td>Booking Lead Time</td>
+              <td>3 days</td>
+              <td>7 days</td>
+            </tr>
+            <tr>
+              <td>Rewards Earning Rate</td>
+              <td>3 pts / kWh</td>
+              <td>4 pts / kWh</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="text-align: center; margin-top: 40px;">
+        <button class="btn btn-ghost" onclick="showPage('landing')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       MY STATS PAGE (BMS) — Battery Telemetry & Insights
+  ════════════════════════════════════════════════ -->
+  <div id="page-stats" class="page section">
+    <div class="stats-wrap">
+
+      <button class="btn btn-ghost btn-sm" onclick="showPage('landing')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+
+      <div class="stats-header">
+        <div>
+          <div class="section-label">Battery Insights</div>
+          <h2>My <span class="gradient-text">Stats</span></h2>
+          <p class="stats-vehicle" id="stats-vehicle">Your vehicle</p>
+        </div>
+        <div class="stats-header-right">
+          <span class="badge badge-gold" id="bms-status-badge">BMS Not Connected</span>
+          <button class="btn btn-outline btn-sm" id="bms-sample-btn" onclick="toggleBMSSample()">Preview with sample data</button>
+        </div>
+      </div>
+
+      <div class="stats-notice" id="bms-notice">
+        <i class="fas fa-info-circle"></i>
+        Live values will appear here once your vehicle's BMS is connected. Until then, fields show "--".
+      </div>
+
+      <!-- Battery -->
+      <h3 class="stats-section-title"><i class="fas fa-car-battery"></i> Battery</h3>
+      <div class="stats-grid-battery">
+
+        <!-- Current Voltage -->
+        <div class="card stats-card">
+          <div class="stats-card-top">
+            <div class="stat-icon gold"><i class="fas fa-bolt"></i></div>
+            <span class="badge badge-muted">Pack</span>
+          </div>
+          <div class="stat-label">Current Voltage</div>
+          <div class="stats-big" id="bms-voltage">--</div>
+          <div class="stats-sub">Total battery pack voltage</div>
+        </div>
+
+        <!-- Battery Temperature -->
+        <div class="card stats-card">
+          <div class="stats-card-top">
+            <div class="stat-icon red"><i class="fas fa-thermometer-half"></i></div>
+            <span class="badge badge-muted" id="bms-temp-badge">No data</span>
+          </div>
+          <div class="stat-label">Battery Temperature</div>
+          <div class="stats-big" id="bms-temp">--</div>
+          <div class="stats-sub">Average pack temperature</div>
+        </div>
+
+        <!-- SOC + Estimated Range -->
+        <div class="card stats-card">
+          <div class="stats-card-top">
+            <div class="stat-icon blue"><i class="fas fa-battery-half"></i></div>
+          </div>
+          <div class="stat-label">SOC (State of Charge)</div>
+          <div class="stats-soc-body">
+            <div class="ev-charge-ring stats-soc-ring" id="bms-soc-ring" style="background:conic-gradient(var(--border) 0% 100%);">
+              <span class="ev-charge-pct" id="bms-soc">--</span>
+            </div>
+            <div class="stats-soc-range">
+              <div class="stat-label">Estimated Range</div>
+              <div class="stats-mid" id="bms-range">--</div>
+            </div>
+          </div>
+          <div class="stats-sub">Current battery level</div>
+        </div>
+
+        <!-- Battery Health -->
+        <div class="card stats-card">
+          <div class="stats-card-top">
+            <div class="stat-icon green"><i class="fas fa-heartbeat"></i></div>
+          </div>
+          <div class="stat-label">Battery Health (SOH)</div>
+          <div class="stats-big" id="bms-soh">--</div>
+          <div class="stats-sub">Overall battery condition</div>
+        </div>
+
+      </div>
+
+      <!-- Charging behaviour -->
+      <h3 class="stats-section-title"><i class="fas fa-chart-line"></i> Charging Behaviour</h3>
+      <div class="card">
+        <div class="stats-grid-2">
+          <div class="stats-mini">
+            <div class="stat-label">Avg. Start Charge Level</div>
+            <div class="stats-mid" id="bms-avg-start-level">--</div>
+          </div>
+          <div class="stats-mini">
+            <div class="stat-label">Avg. End Charge Level</div>
+            <div class="stats-mid" id="bms-avg-end-level">--</div>
+          </div>
+        </div>
+        <div class="stats-range-wrap">
+          <div class="stats-sub" style="margin-bottom:8px;">Typical charging window (start level → end level)</div>
+          <div class="stats-range-track"><div class="stats-range-fill" id="bms-range-fill" style="left:0;width:0;"></div></div>
+          <div class="stats-range-scale"><span>0%</span><span>50%</span><span>100%</span></div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <h3 class="stats-section-title"><i class="fas fa-bell"></i> Alerts</h3>
+      <div class="card" id="bms-alerts">
+        <div class="pd-empty">Alerts will appear here once BMS is connected.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       3. AUTH PAGE
+  ════════════════════════════════════════════════ -->
+  <div id="page-auth" class="page auth-page" style="display: none;">
+    <div class="auth-left">
+            <div class="auth-left-bg"></div>
+      <div class="auth-crystal-showcase" aria-hidden="true">
+        <svg width="96" height="108" viewBox="0 0 96 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="authCrystGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#398BFF" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#030405" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="authFacetA" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F5F6F8" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#398BFF" stop-opacity="0.35"/>
+            </linearGradient>
+            <linearGradient id="authFacetB" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#398BFF" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#0B1018" stop-opacity="0.75"/>
+            </linearGradient>
+          </defs>
+          <circle cx="48" cy="52" r="42" fill="url(#authCrystGlow)" />
+          <polygon points="48,6 85,34 72,90 48,102 14,78 22,27" fill="rgba(11,16,24,0.7)" stroke="rgba(130,155,190,0.2)" stroke-width="1"/>
+          <polygon points="48,6 85,34 53,56 48,102" fill="url(#authFacetA)" stroke="rgba(245,246,248,0.3)" stroke-width="0.8"/>
+          <polygon points="48,6 53,56 14,78 22,27" fill="url(#authFacetB)" stroke="rgba(130,155,190,0.2)" stroke-width="0.8"/>
+          <polygon points="53,56 85,34 72,90 48,102" fill="rgba(57,139,255,0.25)" stroke="rgba(245,246,248,0.35)" stroke-width="0.8"/>
+        </svg>
+      </div>
+      <div class="auth-left-content">
+        <h2>Smart Charging,<br>Simplified.</h2>
+        <p>Log in to access real-time station slot listings, watch customized commercial campaigns, and manage vehicle bills.</p>
+        <div class="auth-mockup-cards">
+          <div class="auth-mini-card">
+            <div class="auth-mini-icon electric"><i class="fas fa-shield-alt"></i></div>
+            <div>
+              <div style="font-weight:700;font-size:14px;">100% Secure Payments</div>
+              <div style="font-size:12px;color:var(--text2)">UPI, Cards, and Wallet integrations.</div>
+            </div>
+          </div>
+          <div class="auth-mini-card">
+            <div class="auth-mini-icon royal"><i class="fas fa-coins"></i></div>
+            <div>
+              <div style="font-weight:700;font-size:14px;">AI-Rewards Dashboard</div>
+              <div style="font-size:12px;color:var(--text2)">Reduce bills up to 60% automatically.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div style="display:flex; justify-content:flex-start; align-items:center; margin-bottom: 20px;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="showPage('landing')" style="padding: 6px 12px; font-size: 12px; color: var(--text2); border: 1px solid rgba(158, 164, 192, 0.16); border-radius: 8px;">
+          <i class="fas fa-arrow-left"></i> Back to Website
+        </button>
+      </div>
+      <div class="nav-logo auth-panel-logo" style="margin-bottom: 24px; cursor: pointer;" onclick="showPage('landing')">
+        <img src="assets/evio-logo-wordmark.png" alt="EVIO" class="auth-logo-img">
+      </div>
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login-btn" onclick="toggleAuthTab('login')">Log In</div>
+        <div class="auth-tab" id="tab-signup-btn" onclick="toggleAuthTab('signup')">Sign Up</div>
+      </div>
+
+      <!-- Log In Form -->
+      <form id="form-login" onsubmit="handleAuth(event, 'login')">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="name@domain.com" required>
+        </div>
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label for="login-password" style="margin-bottom:0;">Password</label>
+            <a href="javascript:void(0)" onclick="openUserForgotPassword()" style="font-size:12px;color:var(--primary);text-decoration:none;cursor:pointer;">Forgot password?</a>
+          </div>
+          <div class="password-input-wrap">
+            <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password', 'login-pass-icon')" title="Show / Hide Password" aria-label="Toggle password visibility">
+              <i id="login-pass-icon" class="far fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Enter Dashboard <i class="fas fa-arrow-right"></i></button>
+      </form>
+
+      <!-- Sign Up Form (Hidden by default) -->
+      <form id="form-signup" onsubmit="handleAuth(event, 'signup')" style="display: none;">
+        <div class="form-group">
+          <label for="signup-name">Full Name</label>
+          <input type="text" id="signup-name" class="form-input" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="signup-email">Email Address</label>
+          <input type="email" id="signup-email" class="form-input" placeholder="name@domain.com" required>
+        </div>
+        <div class="form-group">
+          <label for="signup-password">Create Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="signup-password" class="form-input" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('signup-password', 'signup-pass-icon')" title="Show / Hide Password" aria-label="Toggle password visibility">
+              <i id="signup-pass-icon" class="far fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Create Account <i class="fas fa-user-plus"></i></button>
+      </form>
+      <!-- OTP Verification Form -->
+<form id="form-otp" onsubmit="verifyOTP(event)" style="display: none;">
+
+  <div class="form-group">
+    <label for="otp-input">Enter OTP</label>
+    <input
+      type="text"
+      id="otp-input"
+      class="form-input"
+      placeholder="Enter 6-digit OTP"
+      maxlength="6"
+      inputmode="numeric"
+      required
+    >
+  </div>
+
+  <button
+    type="submit"
+    class="btn btn-primary"
+    style="width: 100%; margin-top: 10px;"
+  >
+    Verify OTP <i class="fas fa-check"></i>
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-outline"
+    style="width: 100%; margin-top: 10px;"
+    onclick="resendOTP()"
+  >
+    Resend OTP
+  </button>
+
+  <p id="otp-email-text"
+     style="font-size:12px;color:var(--text3);text-align:center;margin-top:15px;">
+  </p>
+
+</form>
+
+      <!-- Forgot Password Step 1: Request OTP -->
+      <form id="form-forgot-request" onsubmit="handleUserForgotPasswordRequest(event)" style="display: none;">
+        <div style="font-size: 13px; color: var(--text2); margin-bottom: 16px;">
+          Enter your registered email address and we'll send a 6-digit verification code to reset your password.
+        </div>
+        <div class="form-group">
+          <label for="forgot-email">Registered Email Address</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="name@domain.com" required>
+        </div>
+        <button type="submit" id="btn-forgot-send" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+          Send Reset Code <i class="fas fa-paper-plane"></i>
+        </button>
+        <button type="button" class="btn btn-outline" style="width: 100%; margin-top: 10px;" onclick="toggleAuthTab('login')">
+          <i class="fas fa-arrow-left"></i> Back to Log In
+        </button>
+      </form>
+
+      <!-- Forgot Password Step 2: Verify OTP & New Password -->
+      <form id="form-forgot-reset" onsubmit="handleUserForgotPasswordReset(event)" style="display: none;">
+        <p id="forgot-email-display-text" style="font-size:13px;color:var(--text2);margin-bottom:14px;"></p>
+        <div class="form-group">
+          <label for="forgot-otp-input">6-Digit Verification Code</label>
+          <input type="text" id="forgot-otp-input" class="form-input" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" required>
+        </div>
+        <div class="form-group">
+          <label for="forgot-new-password">New Password</label>
+          <input type="password" id="forgot-new-password" class="form-input" placeholder="Min 8 characters" minlength="8" required>
+        </div>
+        <div class="form-group">
+          <label for="forgot-confirm-password">Confirm New Password</label>
+          <input type="password" id="forgot-confirm-password" class="form-input" placeholder="Re-enter new password" minlength="8" required>
+        </div>
+        <button type="submit" id="btn-forgot-submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+          Reset Password <i class="fas fa-check"></i>
+        </button>
+        <div style="display:flex; justify-content:space-between; margin-top:12px;">
+          <a href="javascript:void(0)" onclick="handleUserForgotPasswordResend()" style="font-size:12px;color:var(--primary);text-decoration:none;cursor:pointer;">Resend Code</a>
+          <a href="javascript:void(0)" onclick="toggleAuthTab('login')" style="font-size:12px;color:var(--text3);text-decoration:none;cursor:pointer;">Back to Log In</a>
+        </div>
+      </form>
+      <div class="divider-text" style="margin: 24px 0;">or connect with</div>
+
+      <div class="social-login">
+        <div class="social-login-btn" onclick="handleSocialAuth('Google')">
+          <i class="fab fa-google" style="color: #ea4335;"></i> Google
+        </div>
+        <div class="social-login-btn" onclick="handleSocialAuth('Apple')">
+          <i class="fab fa-apple" style="color: #fff;"></i> Apple
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="#" onclick="showPage('landing')" style="font-size:13px;color:var(--text3);text-decoration:underline;">← Back to Landing Page</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       4. DASHBOARD CONTAINER LAYOUT (Sidebar + Sub-views)
+  ════════════════════════════════════════════════ -->
+  <div id="page-dashboard" class="page dashboard-page">
+    <!-- Sidebar Overlay for mobile -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="dashboardSidebar">
+      <div class="sidebar-logo" onclick="showPage('landing')" style="cursor: pointer;" title="EVIO — Return to Home">
+        <img src="assets/evio-logo-wordmark.png" alt="EVIO" class="sidebar-logo-img">
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">General</div>
+        <div class="sidebar-item active" id="nav-overview" onclick="showDashboardView('overview')">
+          <i class="fas fa-chart-pie"></i> Overview
+        </div>
+        <div class="sidebar-item" id="nav-find-book" onclick="showDashboardView('find-book')">
+          <i class="fas fa-charging-station"></i> Find &amp; Book
+        </div>
+
+        <div class="sidebar-section-label">Rewards</div>
+        <div class="sidebar-item" id="nav-rewards" onclick="showDashboardView('rewards')">
+          <i class="fas fa-gift"></i> Rewards Wallet
+        </div>
+
+        <div class="sidebar-section-label">Account</div>
+        <div class="sidebar-item" id="nav-subscriptions" onclick="showDashboardView('subscriptions')">
+          <i class="fas fa-crown"></i> Manage Subscription
+        </div>
+        <div class="sidebar-item" id="nav-profile" onclick="showDashboardView('profile')">
+          <i class="fas fa-user-cog"></i> Profile Settings
+        </div>
+        
+        <div class="sidebar-section-label" id="sidebar-admin-label" style="display: none;">Admin Controls</div>
+        <div class="sidebar-item" id="nav-admin" style="display: none;" onclick="showDashboardView('admin')">
+          <i class="fas fa-user-shield" style="color:var(--blue-electric)"></i> Admin Panel
+        </div>
+      </nav>
+      
+      <div class="sidebar-bottom">
+        <div class="sidebar-user" onclick="showDashboardView('profile')">
+          <div class="avatar" id="sidebar-user-avatar">U</div>
+          <div class="sidebar-user-info">
+            <div class="name" id="sidebar-user-name">User Account</div>
+            <div class="role" id="sidebar-user-tier">Basic Driver</div>
+          </div>
+        </div>
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="showPage('landing')" style="width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; color: var(--text2);">
+            <i class="fas fa-arrow-left" style="color: var(--blue-electric);"></i> Return to Main Site
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Dash Panel -->
+    <div class="dash-main">
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" aria-label="Toggle navigation drawer">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="page-title" id="dash-topbar-title">Dashboard Overview</div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-ghost btn-sm" onclick="showPage('landing')" title="Return to Landing Page" style="display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-home"></i> <span>Home</span>
+          </button>
+          <a href="map.html" class="btn btn-ghost btn-sm" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Open Interactive Map">
+            <i class="fas fa-map-marked-alt" style="color: var(--blue-electric);"></i> <span>Live Map</span>
+          </a>
+          <div class="topbar-icon" onclick="triggerNotification()" title="Notifications">
+            <i class="far fa-bell"></i>
+            <span class="notif-dot"></span>
+          </div>
+          <div class="topbar-icon" onclick="showDashboardView('profile')" title="Profile & Settings">
+            <i class="far fa-user"></i>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="logout()" title="Logout" style="border-radius: var(--radius-sm);"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+      </header>
+
+      <!-- Dashboard View Panel -->
+      <div class="dash-content">
+
+        <!-- ────────────────── Subview 1: Overview ────────────────── -->
+        <section id="view-overview" class="dash-subview" style="display: none;">
+
+  <!-- Dashboard Stats -->
+  <div class="admin-stats-grid" style="margin-bottom: 24px;">
+
+    <div class="stat-box">
+      <div class="stat-icon green"><i class="fas fa-wallet"></i></div>
+      <div>
+        <div class="stat-label">Points Balance</div>
+        <div class="stat-value" id="stat-wallet-bal">150 pts</div>
+        <div class="stat-change">
+          <i class="fas fa-arrow-up"></i> +24 pts today
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-icon blue"><i class="fas fa-plug"></i></div>
+      <div>
+        <div class="stat-label">Energy Consumed</div>
+        <div class="stat-value" id="stat-energy-used">84.2 kWh</div>
+        <div class="stat-change">4 sessions logged</div>
+      </div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-icon gold"><i class="fas fa-coins"></i></div>
+      <div>
+        <div class="stat-label">Points Earned</div>
+        <div class="stat-value" id="stat-points-earned">150 pts</div>
+        <div class="stat-change">Redeemable in wallet</div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       🔋 NEW: CHARGING BEHAVIOUR & BATTERY INSIGHTS
+       ===================================================== -->
+
+  <div class="card" style="margin-bottom: 24px;">
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    ">
+
+      <div>
+        <h3>
+          <i class="fas fa-battery-three-quarters"
+             style="color:var(--blue-electric); margin-right:8px;"></i>
+          Charging Behaviour
+        </h3>
+
+        <p style="
+          font-size:13px;
+          color:var(--text3);
+          margin-top:5px;
+        ">
+          EVIO learns your charging pattern and provides personalized insights.
+        </p>
+      </div>
+
+      <span class="badge badge-green">
+        <i class="fas fa-brain"></i> AI Insights
+      </span>
+
+    </div>
+
+
+    <!-- Behaviour Stats -->
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+      margin-bottom:24px;
+    ">
+
+      <div class="stat-box">
+        <div class="stat-icon green">
+          <i class="fas fa-battery-quarter"></i>
+        </div>
+
+        <div>
+          <div class="stat-label">Avg. Start Level</div>
+          <div class="stat-value" id="avg-start-battery">
+            28%
+          </div>
+          <div class="stat-change">
+            Based on recent sessions
+          </div>
+        </div>
+      </div>
+
+
+      <div class="stat-box">
+        <div class="stat-icon blue">
+          <i class="fas fa-battery-full"></i>
+        </div>
+
+        <div>
+          <div class="stat-label">Avg. End Level</div>
+          <div class="stat-value" id="avg-end-battery">
+            64%
+          </div>
+          <div class="stat-change">
+            Typical charging level
+          </div>
+        </div>
+      </div>
+
+
+      <div class="stat-box">
+        <div class="stat-icon red">
+          <i class="fas fa-charging-station"></i>
+        </div>
+
+        <div>
+          <div class="stat-label">Station Charging</div>
+          <div class="stat-value" id="station-charging-percent">
+            100%
+          </div>
+          <div class="stat-change">
+            Public charging sessions
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- Recent Charging Pattern -->
+
+    <div style="
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:24px;
+    ">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:18px;
+        flex-wrap:wrap;
+        gap:10px;
+      ">
+        <h4 style="margin:0;">
+          <i class="fas fa-history"
+             style="color:var(--blue-electric); margin-right:8px;"></i>
+          Recent Charging Pattern
+        </h4>
+        <span style="font-size:12px; color:var(--text3);">
+          <i class="fas fa-charging-station" style="color:var(--blue-electric); margin-right:4px;"></i> Verified Public Station Logs
+        </span>
+      </div>
+
+
+      <div id="charging-behaviour-history"
+           style="
+           display:grid;
+           grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+           gap:14px;
+           ">
+
+        <!-- Session 1 -->
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          padding:16px;
+          background:var(--bg);
+          border:1px solid rgba(130, 155, 190, 0.12);
+          border-radius:var(--radius-sm);
+          ">
+
+          <div>
+            <div style="font-weight:600; display:flex; align-items:center; gap:6px;">
+              <i class="fas fa-bolt" style="color:var(--blue-electric); font-size:12px;"></i>
+              Bhawarkua EV Hub
+            </div>
+
+            <div style="
+              font-size:11px;
+              color:var(--text3);
+              margin-top:4px;
+              ">
+              Today • 14.6 kWh • 30 kW DC
+            </div>
+          </div>
+
+          <div style="
+            font-weight:700;
+            color:var(--blue-electric);
+            font-size:14px;
+            ">
+            22% → 72%
+          </div>
+
+        </div>
+
+
+        <!-- Session 2 -->
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          padding:16px;
+          background:var(--bg);
+          border:1px solid rgba(130, 155, 190, 0.12);
+          border-radius:var(--radius-sm);
+          ">
+
+          <div>
+            <div style="font-weight:600; display:flex; align-items:center; gap:6px;">
+              <i class="fas fa-bolt" style="color:var(--blue-electric); font-size:12px;"></i>
+              Vijay Nagar EV Fast Hub
+            </div>
+
+            <div style="
+              font-size:11px;
+              color:var(--text3);
+              margin-top:4px;
+              ">
+              Yesterday • 12.4 kWh • 50 kW CCS2
+            </div>
+          </div>
+
+          <div style="
+            font-weight:700;
+            color:var(--blue-electric);
+            font-size:14px;
+            ">
+            30% → 60%
+          </div>
+
+        </div>
+
+
+        <!-- Session 3 -->
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          padding:16px;
+          background:var(--bg);
+          border:1px solid rgba(130, 155, 190, 0.12);
+          border-radius:var(--radius-sm);
+          ">
+
+          <div>
+            <div style="font-weight:600; display:flex; align-items:center; gap:6px;">
+              <i class="fas fa-bolt" style="color:var(--blue-electric); font-size:12px;"></i>
+              Palasia Electric Zone
+            </div>
+
+            <div style="
+              font-size:11px;
+              color:var(--text3);
+              margin-top:4px;
+              ">
+              3 days ago • 16.8 kWh • 60 kW CCS2
+            </div>
+          </div>
+
+          <div style="
+            font-weight:700;
+            color:var(--blue-electric);
+            font-size:14px;
+            ">
+            25% → 70%
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       EXISTING ACTIVE CHARGING SESSION
+       ===================================================== -->
+
+  <div class="booking-layout">
+
+    <!-- Charging Progress & Session Info -->
+    <div class="card">
+
+      <div class="ev-card-top" style="margin-bottom: 24px;">
+
+        <div>
+          <h3 id="session-title">
+            Active Charging Session
+          </h3>
+
+          <div style="
+            font-size: 13px;
+            color: var(--text3);
+            margin-top: 4px;
+            "
+            id="session-station-name">
+
+            Station 01 — Bhawarkua EV Charging Hub
+
+          </div>
+        </div>
+
+        <span class="badge badge-green"
+              id="session-status-badge">
+
+          <span style="
+            width:6px;
+            height:6px;
+            background:var(--blue-electric);
+            border-radius:50%;
+            display:inline-block;
+          "></span>
+
+          Active
+
+        </span>
+
+      </div>
+
+
+      <div style="
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        padding:20px 0;
+      ">
+
+        <div class="ev-charge-ring" id="overview-charge-ring">
+          <svg class="radar-svg" viewBox="0 0 120 120">
+            <!-- Background track ring -->
+            <circle class="radar-track" cx="60" cy="60" r="48"></circle>
+            <!-- High-tech subtle telemetry inner ring -->
+            <circle cx="60" cy="60" r="39" stroke="rgba(57, 139, 255, 0.25)" stroke-width="1" stroke-dasharray="2 4" fill="none"></circle>
+            <!-- Animated glowing progress arc -->
+            <circle class="radar-progress" id="overview-circle-progress" cx="60" cy="60" r="48" style="stroke-dasharray: 301.59; stroke-dashoffset: 84.44;"></circle>
+          </svg>
+          <div class="radar-center-info">
+            <div class="radar-bolt" id="overview-charge-bolt"><i class="fas fa-bolt"></i></div>
+            <div class="ev-charge-pct" id="overview-charge-pct">72%</div>
+            <div class="radar-label" id="overview-charge-label">CHARGING</div>
+          </div>
+        </div>
+
+
+        <div style="
+          text-align:center;
+          margin-top:10px;
+        ">
+
+          <div style="
+            font-weight:700;
+            font-size:16px;
+            "
+            id="session-vehicle-display">
+
+            Tata Nexon EV
+
+          </div>
+
+          <div style="
+            font-size:12px;
+            color:var(--text3);
+            margin-top:4px;
+            "
+            id="session-rate-display">
+
+            Charging Speed: 30 kW |
+            Base Rate: ₹18/kWh
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="progress-track"
+           style="margin:20px 0;height:8px;">
+
+        <div class="progress-fill"
+             id="session-progress-fill"
+             style="width:72%">
+
+        </div>
+
+      </div>
+
+
+      <div class="ev-card-info"
+           style="margin-bottom:24px;">
+
+        <div class="ev-info-item">
+
+          <div class="ev-info-label">
+            Estimated Time Left
+          </div>
+
+          <div class="ev-info-val"
+               id="session-time-left">
+
+            18 min
+
+          </div>
+
+        </div>
+
+
+        <div class="ev-info-item">
+
+          <div class="ev-info-label">
+            Energy Transferred
+          </div>
+
+          <div class="ev-info-val"
+               id="session-energy">
+
+            14.6 kWh
+
+          </div>
+
+        </div>
+
+
+        <div class="ev-info-item">
+
+          <div class="ev-info-label">
+            Accrued Charging Cost
+          </div>
+
+          <div class="ev-info-val"
+               id="session-cost">
+
+            ₹182.00
+
+          </div>
+
+        </div>
+
+
+        <div class="ev-info-item">
+
+          <div class="ev-info-label">
+            Charging Rewards Earned
+          </div>
+
+          <div class="ev-info-val"
+               id="session-cashback"
+               style="color:var(--blue-electric)">
+
+            +34 pts
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="divider"
+           style="margin:16px 0;">
+      </div>
+
+
+      <div style="
+        display:flex;
+        gap:12px;
+        justify-content:flex-end;
+      ">
+
+        <button class="btn btn-danger btn-sm"
+                id="btn-session-toggle"
+                onclick="toggleSimulatedSession()">
+
+          Stop Session
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- Booking List / Quick actions -->
+
+    <div style="
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    ">
+
+
+      <div class="card" style="flex:1;">
+
+        <h3 style="margin-bottom:16px;">
+          Upcoming Bookings
+        </h3>
+
+        <div id="overview-booking-list"
+             style="
+             display:flex;
+             flex-direction:column;
+             gap:12px;
+             ">
+
+          <div style="
+            font-size:13px;
+            color:var(--text3);
+            text-align:center;
+            padding:20px 0;
+          ">
+
+            No active bookings found.
+            Select a station to book a slot.
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+        
+
+        <!-- ────────────────── Subview 2: Find & Book ────────────────── -->
+        <section id="view-find-book" class="dash-subview" style="display: none;">
+          <!-- 1. Station Filters & Search -->
+          <div class="station-filters" style="margin-bottom: 20px;">
+            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+              <input type="text" id="station-search" class="form-input" placeholder="Search by area or station name..." onkeyup="filterStations()">
+            </div>
+            <div class="filter-chip active" onclick="toggleFilterChip(this, 'all')">All Stations</div>
+            <div class="filter-chip" onclick="toggleFilterChip(this, 'CCS2')">DC Fast (CCS2)</div>
+            <div class="filter-chip" onclick="toggleFilterChip(this, 'Type 2')">AC Charger (Type 2)</div>
+            <div class="filter-chip" onclick="toggleFilterChip(this, 'available')">Available Now</div>
+            <a href="map.html" class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:8px;margin-left:auto;white-space:nowrap;">
+              <i class="fas fa-map-marked-alt" style="color:var(--blue-electric)"></i> View Live Map
+            </a>
+          </div>
+
+          <!-- 2. Stations List Grid -->
+          <div class="stations-grid" id="stations-list-container" style="margin-bottom: 28px;">
+            <!-- Dynamic Stations Card list goes here -->
+          </div>
+
+          <!-- 3. Slot Reservation Panel -->
+          <div class="booking-layout" id="booking-section-wrapper">
+            <!-- Slot picker -->
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 8px; flex-wrap:wrap; gap:10px;">
+                <div>
+                  <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--blue-electric); font-weight: 700; margin-bottom: 4px;">Selected Charging Station</div>
+                  <h3 id="booking-station-title" style="margin-bottom: 4px;">Bhawarkua EV Charging Hub</h3>
+                  <p style="font-size: 13px; color: var(--text3);" id="booking-station-address">Bhawarkua, Indore</p>
+                </div>
+              </div>
+              
+              <div class="divider" style="margin: 16px 0;"></div>
+
+              <h4 style="font-size: 14px; color: var(--text2); margin-bottom: 12px;">1. Select Date</h4>
+              <div class="calendar-strip" id="calendar-days-container">
+                <!-- Dynamically generated days -->
+              </div>
+
+              <h4 style="font-size: 14px; color: var(--text2); margin-bottom: 12px;">2. Select Available Slot</h4>
+              <div class="time-slots-grid" id="time-slots-container">
+                <!-- Dynamic times slots go here -->
+              </div>
+              
+              <p style="font-size: 12px; color: var(--text3); margin-top: 16px;"><i class="fas fa-info-circle"></i> Greyed out slots are already occupied or passed.</p>
+            </div>
+
+            <!-- Booking Summary -->
+            <div class="booking-summary card">
+              <h3 style="margin-bottom: 16px;">Booking Summary</h3>
+              <div class="summary-row">
+                <span>Station</span>
+                <span style="font-weight: 500;" id="summary-station">Bhawarkua EV Hub</span>
+              </div>
+              <div class="summary-row">
+                <span>Date Selected</span>
+                <span style="font-weight: 500;" id="summary-date">Select date</span>
+              </div>
+              <div class="summary-row">
+                <span>Time Slot</span>
+                <span style="font-weight: 500;" id="summary-time">Select time</span>
+              </div>
+              <div class="summary-row">
+                <span>Estimated Energy</span>
+                <span style="font-weight: 500;">25 kWh</span>
+              </div>
+              <div class="summary-row">
+                <span>Base Rate</span>
+                <span style="font-weight: 500;" id="summary-rate">₹18 / kWh</span>
+              </div>
+              <div class="summary-row">
+                <span>Slot Booking Fee</span>
+                <span style="font-weight: 500;">₹50.00</span>
+              </div>
+              <div class="summary-row" style="border-bottom: 2px solid var(--border);">
+                <span>Charging Rewards Multiplier</span>
+                <span style="font-weight: 500; color: var(--blue-electric);" id="summary-multiplier">1.0x</span>
+              </div>
+              <div class="summary-row" style="margin-top: 8px;">
+                <span class="summary-total">Total Price</span>
+                <span class="summary-total" id="summary-total-price">₹0.00</span>
+              </div>
+              <button class="btn btn-primary" style="width: 100%; margin-top: 24px;" onclick="confirmBooking()">Confirm Booking <i class="fas fa-check-circle"></i></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Legacy subview containers for fallback compatibility -->
+        <div id="view-stations" style="display:none;"></div>
+        <div id="view-booking" style="display:none;"></div>
+
+        <!-- ────────────────── Subview 4: Rewards Wallet ────────────────── -->
+        <section id="view-rewards" class="dash-subview" style="display: none;">
+          <div class="rewards-hero">
+            <div>
+              <div class="section-label">Rewards Balance</div>
+              <div class="rewards-points-display" id="rewards-wallet-display">150 pts</div>
+              <p style="font-size: 14px; color: var(--text2); margin-top: 8px;">Earned automatically from your EV charging sessions. Fully redeemable for charging discounts or partner vouchers.</p>
+            </div>
+            <div class="reward-actions">
+              <button class="btn btn-primary" onclick="showDashboardView('find-book')"><i class="fas fa-charging-station"></i> Book Charging</button>
+              <button class="btn btn-outline" onclick="scrollToSection('redeem-section')"><i class="fas fa-gift"></i> Browse Vouchers</button>
+            </div>
+          </div>
+
+          <h3 id="redeem-section" style="margin-bottom: 20px;">Redeem Vouchers</h3>
+          <div class="redeem-cards" style="margin-bottom: 40px;" id="redeem-vouchers-container">
+            <!-- Dynamic redeemable cards -->
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom: 16px;">Transaction History</h3>
+            <div style="overflow-x: auto;">
+              <table class="cashback-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Activity Type</th>
+                    <th>Energy/Duration</th>
+                    <th>Charging Cost</th>
+                    <th>Points Earned / Used</th>
+                  </tr>
+                </thead>
+                <tbody id="transaction-history-table">
+                  <!-- Dynamic transaction logs -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ────────────────── Subview 6: Subscriptions ────────────────── -->
+        <section id="view-subscriptions" class="dash-subview" style="display: none;">
+          <div class="card card-sm" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(12, 19, 32, 0.7); border: 1px solid rgba(158, 164, 192, 0.16);">
+            <div>
+              <div style="font-size: 13px; color: var(--text2);">Current Membership Status</div>
+              <div style="font-size: 20px; font-weight: 700; color: var(--text1); display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                <i class="fas fa-crown" style="color: var(--primary);"></i>
+                <span id="sub-active-tier-name">Basic Driver</span>
+                <span class="badge badge-green" id="sub-active-tier-badge" style="font-size: 11px; padding: 2px 8px;">Active</span>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: var(--text2); max-width: 320px; text-align: right;">
+              Select a plan below to switch your membership tier. Multipliers and booking perks apply immediately.
+            </div>
+          </div>
+          <div class="plans-grid" style="margin-bottom: 40px;">
+            <!-- Pro -->
+            <div class="plan-card featured" id="plan-card-pro">
+              <div class="plan-name">Pro Driver</div>
+              <div class="plan-price">₹299</div>
+              <div class="plan-period">per month</div>
+              <p style="color: var(--text2); font-size: 13px; margin-bottom: 20px;">Best value for daily commuters. Higher rewards, lower bills.</p>
+              <div class="plan-features">
+                <div class="plan-feature"><i class="fas fa-check"></i> Fast DC Charging Ports</div>
+                <div class="plan-feature"><i class="fas fa-check"></i> 1.5x Charging Rewards Multiplier</div>
+                <div class="plan-feature"><i class="fas fa-check"></i> Unlimited Bookings</div>
+                <div class="plan-feature"><i class="fas fa-check"></i> 5% Discount on base rates</div>
+                <div class="plan-feature no"><i class="fas fa-times"></i> Zero Booking Cancellation Fees</div>
+              </div>
+              <button class="btn btn-primary" style="width: 100%;" id="btn-sub-pro" onclick="upgradeSubscription('Pro')">Upgrade Plan</button>
+            </div>
+
+            <!-- Premium -->
+            <div class="plan-card" id="plan-card-elite">
+              <div class="plan-name">Elite Driver</div>
+              <div class="plan-price">₹599</div>
+              <div class="plan-period">per month</div>
+              <p style="color: var(--text2); font-size: 13px; margin-bottom: 20px;">For EV enthusiasts who require top-tier charging speed & cashbacks.</p>
+              <div class="plan-features">
+                <div class="plan-feature"><i class="fas fa-check"></i> Ultra-Fast Charging Nodes</div>
+                <div class="plan-feature"><i class="fas fa-check"></i> 2.0x Charging Rewards Multiplier</div>
+                <div class="plan-feature"><i class="fas fa-check"></i> Unlimited Bookings & Zero Fees</div>
+                <div class="plan-feature"><i class="fas fa-check"></i> 10% Discount on base rates</div>
+                <div class="plan-feature"><i class="fas fa-check"></i> Exclusive Partner Offers</div>
+              </div>
+              <button class="btn btn-outline" style="width: 100%;" id="btn-sub-elite" onclick="upgradeSubscription('Elite')">Upgrade Plan</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom: 20px;">Detailed Plan Comparison</h3>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Pro</th>
+                  <th>Elite</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Monthly Fee</td>
+                  <td>₹299</td>
+                  <td>₹599</td>
+                </tr>
+                <tr>
+                  <td>Charging Rewards Multiplier</td>
+                  <td>1.5x</td>
+                  <td>2.0x</td>
+                </tr>
+                <tr>
+                  <td>Booking Cap</td>
+                  <td>Unlimited</td>
+                  <td>Unlimited</td>
+                </tr>
+                <tr>
+                  <td>Max Charging Power</td>
+                  <td>Up to 50 kW</td>
+                  <td>Up to 120+ kW</td>
+                </tr>
+                <tr>
+                  <td>Booking Lead Time</td>
+                  <td>3 days</td>
+                  <td>7 days</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ────────────────── Subview 7: Profile & Vehicle ────────────────── -->
+        <section id="view-profile" class="dash-subview" style="display: none;">
+          <div class="profile-header">
+            <div class="avatar avatar-lg" id="profile-large-avatar">U</div>
+            <div class="profile-info">
+              <h2 id="profile-info-name">User Account</h2>
+              <div class="email" id="profile-info-email"></div>
+              <span class="badge badge-green" id="profile-info-tier-badge">Basic Membership</span>
+            </div>
+          </div>
+
+          <div class="profile-tabs">
+            <div class="profile-tab active" id="profile-tab-details" onclick="switchProfileSubTab('details')">Personal Info</div>
+            <div class="profile-tab" id="profile-tab-vehicle" onclick="switchProfileSubTab('vehicle')">Vehicle Management</div>
+            <div class="profile-tab" id="profile-tab-payment" onclick="switchProfileSubTab('payment')">Payment Settings</div>
+          </div>
+
+          <!-- Tab Contents -->
+          <div id="profile-content-details">
+            <div class="card">
+              <h3 style="margin-bottom: 20px;">Edit Personal Details</h3>
+              <form onsubmit="saveProfileDetails(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;">
+                  <div class="form-group">
+                    <label for="profile-name-input">Full Name</label>
+                    <input type="text" id="profile-name-input" class="form-input" placeholder="Enter Full Name">
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-email-input">Email Address</label>
+                    <input type="email" id="profile-email-input" class="form-input" placeholder="Email Address" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-phone-input">Phone Number</label>
+                    <input type="text" id="profile-phone-input" class="form-input" placeholder="Phone Number">
+                  </div>
+                  <div class="form-group">
+                    <label for="profile-city-input">City</label>
+                    <input type="text" id="profile-city-input" class="form-input" placeholder="City">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Save Profile Changes</button>
+              </form>
+            </div>
+          </div>
+
+          <div id="profile-content-vehicle" style="display: none;">
+            <div class="card" style="margin-bottom: 24px;">
+              <h3 style="margin-bottom: 16px;">Your EVs</h3>
+              <div id="profile-vehicles-list-container">
+                <!-- Dynamically populated vehicles list -->
+              </div>
+            </div>
+            
+            <div class="card">
+              <h3 style="margin-bottom: 20px;">Add New Vehicle</h3>
+              <form onsubmit="addNewVehicle(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                  <div class="form-group">
+                    <label for="vehicle-brand">EV Model</label>
+                    <select id="vehicle-brand" class="form-input">
+                      <option value="Tata Nexon EV">Tata Nexon EV</option>
+                      <option value="MG ZS EV">MG ZS EV</option>
+                      <option value="Hyundai Ioniq 5">Hyundai Ioniq 5</option>
+                      <option value="BYD Atto 3">BYD Atto 3</option>
+                      <option value="Kia EV6">Kia EV6</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="vehicle-number">License Plate Number</label>
+                    <input type="text" id="vehicle-number" class="form-input" placeholder="KA-03-MY-4321" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Add Vehicle <i class="fas fa-plus"></i></button>
+              </form>
+            </div>
+          </div>
+
+          <div id="profile-content-payment" style="display: none;">
+            <div class="card">
+              <h3 style="margin-bottom: 20px;">Saved Payment Methods</h3>
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                <div class="vehicle-card" style="justify-content: space-between; border-color: rgba(0,170,255,0.25);">
+                  <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="font-size: 28px; color: var(--blue);"><i class="fab fa-cc-visa"></i></div>
+                    <div>
+                      <div style="font-weight: 700;">Visa Credit Card</div>
+                      <div style="font-size: 12px; color: var(--text3);">xxxx-xxxx-xxxx-4096 (Expires 09/29)</div>
+                    </div>
+                  </div>
+                  <span class="badge badge-blue">Primary</span>
+                </div>
+                <div class="vehicle-card" style="justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="font-size: 28px; color: var(--blue-electric);"><i class="fas fa-mobile-alt"></i></div>
+                    <div>
+                      <div class="font-weight: 700;">Google UPI Wallet</div>
+                      <div style="font-size: 12px; color: var(--text3);">primary.vpa@upi</div>
+                    </div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm">Remove</button>
+                </div>
+              </div>
+              <button class="btn btn-outline"><i class="fas fa-plus"></i> Link New Payment Method</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ────────────────── Subview 8: Admin Panel ────────────────── -->
+        <section id="view-admin" class="dash-subview" style="display: none;">
+          <div class="admin-stats-grid" style="margin-bottom: 24px;">
+            <div class="stat-box">
+              <div class="stat-icon green"><i class="fas fa-road"></i></div>
+              <div>
+                <div class="stat-label">Network Active Sessions</div>
+                <div class="stat-value" id="admin-active-sessions">489</div>
+                <div class="stat-change">Across 1,200 stations</div>
+              </div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon blue"><i class="fas fa-charging-station"></i></div>
+              <div>
+                <div class="stat-label">Total Power Output</div>
+                <div class="stat-value">12,680 kW</div>
+                <div class="stat-change"><i class="fas fa-arrow-up"></i> +12% this week</div>
+              </div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon gold"><i class="fas fa-ad"></i></div>
+              <div>
+                <div class="stat-label">Active Advertisers</div>
+                <div class="stat-value" id="admin-advertiser-count">34 Brands</div>
+                <div class="stat-change">4 pending review</div>
+              </div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon red"><i class="fas fa-rupee-sign"></i></div>
+              <div>
+                <div class="stat-label">Ad Sponsored Credits</div>
+                <div class="stat-value">₹24,85,900</div>
+                <div class="stat-change">Total payout pool</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px; flex-wrap: wrap;" class="booking-layout">
+            <!-- Weekly charging trend SVG chart -->
+            <div class="chart-area">
+              <h3>Electricity Output (Weekly MWh)</h3>
+              <div class="bar-chart" id="admin-bar-chart">
+                <div class="bar-item">
+                  <div class="bar-fill" style="height: 60%;"></div>
+                  <div class="bar-label">Mon</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height: 45%;"></div>
+                  <div class="bar-label">Tue</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height: 75%;"></div>
+                  <div class="bar-label">Wed</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height: 90%;"></div>
+                  <div class="bar-label">Thu</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height: 80%;"></div>
+                  <div class="bar-label">Fri</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height: 95%;"></div>
+                  <div class="bar-label">Sat</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height: 100%;"></div>
+                  <div class="bar-label">Sun</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Usage donut chart -->
+            <div class="chart-area" style="text-align: center;">
+              <h3>Station Port Usage</h3>
+              <div style="height: 20px;"></div>
+              <div class="donut-chart">
+                <svg class="donut-svg" width="120" height="120" viewBox="0 0 42 42">
+                  <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--surface)" stroke-width="4.2"></circle>
+                  <!-- 68% active charger ports (electric blue), 32% idle (surface) -->
+                  <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="var(--blue-electric)" stroke-width="4.2" stroke-dasharray="68 32" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="donut-center">
+                  <div style="font-size: 20px; font-weight:800; font-family: var(--font-display);">68%</div>
+                  <div style="font-size: 9px; color: var(--text3); font-weight:700; text-transform: uppercase;">Occupied</div>
+                </div>
+              </div>
+              <div style="margin-top: 16px; display: flex; justify-content: center; gap: 16px; font-size: 12px;">
+                <span><span style="display: inline-block; width: 8px; height: 8px; background: var(--blue-electric); border-radius: 50%; margin-right: 4px;"></span> In Use</span>
+                <span><span style="display: inline-block; width: 8px; height: 8px; background: var(--surface); border-radius: 50%; margin-right: 4px;"></span> Available</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1. Ad Campaigns Settings -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+              <h3 style="margin: 0;"><i class="fas fa-bullhorn" style="color:var(--gold); margin-right: 8px;"></i> Sponsored Ad Campaigns</h3>
+              <button class="btn btn-primary btn-sm" onclick="toggleNewCampaignForm()"><i class="fas fa-plus"></i> New Campaign</button>
+            </div>
+
+            <!-- New Campaign Form (Collapsible) -->
+            <div id="new-campaign-form-container" style="display: none; background: rgba(57,139,255,0.04); border: 1px dashed rgba(57, 139, 255, 0.4); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 20px;">
+              <h4 style="margin-top:0; margin-bottom: 12px; font-size: 15px; color: var(--blue-electric);">Create Advertiser Campaign</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+                <div>
+                  <label style="font-size: 12px; color: var(--text3);">Brand Name</label>
+                  <input type="text" id="new-camp-brand" class="form-input" placeholder="e.g. Tata Motors" style="margin-top: 4px;">
+                </div>
+                <div>
+                  <label style="font-size: 12px; color: var(--text3);">Target Audience</label>
+                  <input type="text" id="new-camp-target" class="form-input" placeholder="e.g. Urban EV Drivers" style="margin-top: 4px;">
+                </div>
+                <div>
+                  <label style="font-size: 12px; color: var(--text3);">Budget / Spend (₹)</label>
+                  <input type="number" id="new-camp-spend" class="form-input" placeholder="50000" style="margin-top: 4px;">
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-ghost btn-sm" onclick="toggleNewCampaignForm()">Cancel</button>
+                <button class="btn btn-primary btn-sm" onclick="submitNewCampaign()"><i class="fas fa-check"></i> Launch Campaign</button>
+              </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table class="campaigns-table">
+                <thead>
+                  <tr>
+                    <th>Campaign Brand</th>
+                    <th>Target Audience</th>
+                    <th>Impressions</th>
+                    <th>Total Spends</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-campaign-list">
+                  <!-- Dynamic campaigns -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. Stations Live Control -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+              <h3 style="margin: 0;"><i class="fas fa-charging-station" style="color:var(--blue); margin-right: 8px;"></i> Charging Stations Manager</h3>
+              <span class="badge badge-green" id="admin-station-count-badge">4 Hubs Active</span>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="campaigns-table">
+                <thead>
+                  <tr>
+                    <th>Station Name</th>
+                    <th>Charger Type</th>
+                    <th>Power Output</th>
+                    <th>Rate / kWh</th>
+                    <th>Slots (Avail/Total)</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-station-list">
+                  <!-- Dynamic stations list -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 3. Network Users & Driver Accounts -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+              <h3 style="margin: 0;"><i class="fas fa-users" style="color:var(--blue-electric); margin-right: 8px;"></i> Registered Users & Drivers</h3>
+              <button class="btn btn-outline btn-sm" onclick="refreshAdminUsers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="campaigns-table">
+                <thead>
+                  <tr>
+                    <th>User / Name</th>
+                    <th>Email Address</th>
+                    <th>Phone</th>
+                    <th>City</th>
+                    <th>Tier Plan</th>
+                    <th>Wallet Balance</th>
+                    <th>Points</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-user-list">
+                  <!-- Dynamic users list -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4. Network Bookings Activity -->
+          <div class="card">
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-calendar-check" style="color:var(--gold); margin-right: 8px;"></i> Live Network Bookings Activity</h3>
+            <div style="overflow-x: auto;">
+              <table class="campaigns-table">
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>Station Name</th>
+                    <th>Scheduled Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-booking-list">
+                  <!-- Dynamic bookings list -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════
+       6. USER WINDOW (Profile Settings / Rewards / Subscription / Booking Status)
+  ════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="userModal" onclick="closeUserModal()">
+    <div class="modal-content user-modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeUserModal()"><i class="fas fa-times"></i></button>
+      <button class="modal-back" onclick="goBackFromModal()"><i class="fas fa-arrow-left"></i> Back</button>
+      <h3 id="userModalTitle"></h3>
+      <div id="userModalBody"></div>
+    </div>
+  </div>
+  <script src="script.js?v=outcrowd_clean_v3"></script>
+  <!-- EVIO AI Assistant Chatbot Widget -->
+  <script>window.EVIO_CHAT_API = "/api/chat";</script>
+  <script src="files/evio-chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+EVIO Charging Rates:
+- Normal AC Charging: Rs 15 per kWh.
+- Fast DC Charging: Rs 20 per kWh.
+- Idle fee: Rs 5 per minute if the car is left connected after charging is 100% complete.
+
+EVIO Membership Plans:
+- Free Tier: Pay as you go, no monthly fee.
+- Pro Tier: Rs 500 per month. Gives 10% discount on charging rates and zero idle fees for the first 30 minutes.
+- Elite Tire: Rs 1000 per month. Gives 15% discount on charging rates and zero idle fees for the first 30 minutes.
+Support Contact:
+- Phone: 1800-EVIO-HELP (1800-3846-4357)
+- Email: support@evio.example.com
+
+Common Troubleshooting:
+- If the charger doesn't start, make sure the connector is firmly pushed into the car's port until you hear a click.
+- If the payment fails in the app, your charging session will pause. Please add money to your EVIO wallet to resume.

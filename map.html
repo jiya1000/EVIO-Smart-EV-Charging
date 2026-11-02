@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/evio-logo-icon.png">
+
+    <title>EV Charging Map</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+            background: #030405; font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+            color: white;
+        }
+
+
+        /* ==========================================
+           MAP SECTION
+        ========================================== */
+
+        .map-section {
+            width: 100%;
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 25px;
+        }
+
+
+        .map-header {
+            margin-bottom: 20px;
+        }
+
+
+        .map-header h2 {
+            margin: 0;
+
+            font-size: 30px;
+
+            background: linear-gradient(
+                90deg,
+                #F5F6F8 0%,
+                #2563EB 60%,
+                #398BFF 100%
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .map-header p {
+            color: #9ca3af;
+            margin-top: 7px;
+        }
+
+
+        /* ==========================================
+           CONTROLS
+        ========================================== */
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+
+        .search-box {
+            flex: 1;
+            min-width: 230px;
+
+            padding: 13px 16px;
+
+            border-radius: 10px;
+            border: 1px solid #27335f;
+
+            background: #0b1026;
+            color: white;
+
+            outline: none;
+
+            font-size: 15px;
+        }
+
+
+        .search-box::placeholder {
+            color: #7c849f;
+        }
+
+
+        .search-box:focus {
+            border-color: #398BFF;
+
+            box-shadow:
+                0 0 12px rgba(57, 139, 255, 0.25);
+        }
+
+
+        .filter {
+            padding: 13px 16px;
+
+            border-radius: 10px;
+            border: 1px solid #27335f;
+
+            background: #0b1026;
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+
+        .location-btn {
+            padding: 13px 20px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: linear-gradient(
+                135deg,
+                #398BFF,
+                #2563EB
+            );
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            box-shadow:
+                0 0 15px rgba(57, 139, 255, 0.25);
+
+            transition: 0.2s;
+        }
+
+
+        .location-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 0 25px rgba(57, 139, 255, 0.45);
+        }
+
+
+        /* ==========================================
+           MAP GALAXY FRAME
+        ========================================== */
+
+        .map-container {
+            position: relative;
+
+            padding: 5px;
+
+            border-radius: 18px;
+
+            background: linear-gradient(
+                135deg,
+                rgba(57, 139, 255, 0.6),
+                rgba(37, 99, 235, 0.35),
+                rgba(11, 16, 24, 0.8)
+            );
+
+            box-shadow:
+                0 0 30px rgba(57, 139, 255, 0.35);
+        }
+
+
+        /* ==========================================
+           MAP - SHARP AND CLEAR
+        ========================================== */
+
+        #map {
+            width: 100%;
+            height: 570px;
+
+            border-radius: 14px;
+            overflow: hidden;
+
+            background: #111827;
+        }
+
+
+        /*
+            IMPORTANT:
+
+            No filter on Leaflet tiles.
+            This keeps OSM roads, names and labels sharp.
+        */
+
+        .leaflet-tile-pane {
+            filter: none;
+        }
+
+
+        /* Subtle galaxy glow only around edges */
+
+        .map-container::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 5px;
+
+            pointer-events: none;
+
+            border-radius: 14px;
+
+            box-shadow:
+                inset 0 0 35px
+                rgba(57, 139, 255, 0.05),
+
+                inset 0 0 50px
+                rgba(11, 16, 24, 0.4);
+        }
+
+
+        /* ==========================================
+           CHARGING STATION MARKER
+        ========================================== */
+
+        .charging-marker {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: radial-gradient(
+                circle,
+                #398BFF 0%,
+                #2563EB 45%,
+                #0B1018 75%,
+                transparent 80%
+            );
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            color: #F5F6F8;
+
+            font-size: 18px;
+
+            border: 2px solid #398BFF;
+
+            box-shadow:
+                0 0 10px rgba(57, 139, 255, 0.7),
+                0 0 20px rgba(37, 99, 235, 0.5),
+                0 0 35px rgba(11, 16, 24, 0.6);
+
+            animation: markerGlow 2.5s infinite alternate ease-in-out;
+        }
+
+
+        @keyframes markerGlow {
+
+            from {
+                box-shadow:
+                    0 0 8px rgba(57, 139, 255, 0.6),
+                    0 0 16px rgba(37, 99, 235, 0.4);
+            }
+
+            to {
+                box-shadow:
+                    0 0 14px rgba(57, 139, 255, 0.9),
+                    0 0 26px rgba(37, 99, 235, 0.6),
+                    0 0 38px rgba(11, 16, 24, 0.8);
+            }
+
+        }
+
+
+        /* ==========================================
+           POPUP
+        ========================================== */
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background: #0b1026;
+            color: white;
+        }
+
+
+        .leaflet-popup-content {
+            margin: 14px;
+        }
+
+
+        .popup {
+            min-width: 230px;
+        }
+
+
+        .popup h3 {
+            margin: 0 0 10px;
+
+            color: #398BFF;
+
+            font-size: 18px;
+        }
+
+
+        .popup p {
+            margin: 7px 0;
+
+            color: #d1d5db;
+
+            font-size: 14px;
+        }
+
+
+        .popup strong {
+            color: white;
+        }
+
+
+        .available {
+            color: #398BFF;
+            font-weight: bold;
+        }
+
+
+        .unavailable {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+
+        .view-btn {
+            width: 100%;
+
+            margin-top: 12px;
+
+            padding: 9px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: linear-gradient(
+                135deg,
+                #398BFF,
+                #2563EB
+            );
+
+            color: white;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+
+        .view-btn:hover {
+            opacity: 0.85;
+
+            box-shadow:
+                0 0 15px rgba(57, 139, 255, 0.3);
+        }
+
+
+        /* ==========================================
+           LEAFLET ZOOM CONTROLS
+        ========================================== */
+
+        .leaflet-control-zoom a {
+            background: #0b1026 !important;
+
+            color: #398BFF !important;
+
+            border-color: #27335f !important;
+        }
+
+
+        .leaflet-control-zoom a:hover {
+            background: #151d3d !important;
+
+            color: white !important;
+        }
+
+/* ==========================================
+   BOOKING MODAL
+========================================== */
+
+.booking-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.75);
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.booking-box {
+    width: 100%;
+    max-width: 430px;
+
+    background: #0b1026;
+
+    border: 1px solid #27335f;
+    border-radius: 18px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 0 30px rgba(57, 139, 255, 0.25);
+
+    position: relative;
+}
+
+.booking-box h2 {
+    margin: 0 0 5px;
+
+    color: #398BFF;
+}
+
+.booking-location {
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.close-booking {
+    position: absolute;
+
+    right: 15px;
+    top: 12px;
+
+    border: none;
+    background: transparent;
+
+    color: #9ca3af;
+
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+.close-booking:hover {
+    color: white;
+}
+.charging-types {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+    margin-bottom: 18px;
+}
+
+.charging-type-btn {
+    padding: 12px;
+
+    border-radius: 9px;
+
+    border: 1px solid #27335f;
+
+    background: #111936;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.charging-type-btn:hover {
+    border-color: #398BFF;
+}
+
+.charging-type-btn.selected {
+    background: linear-gradient(
+        135deg,
+        #398BFF,
+        #2563EB
+    );
+
+    border-color: #398BFF;
+
+    box-shadow:
+        0 0 12px rgba(57, 139, 255, 0.25);
+}
+
+.charging-type-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.time-slots {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-top: 12px;
+}
+
+.time-slot {
+    padding: 11px;
+
+    border-radius: 9px;
+
+    border: 1px solid #27335f;
+
+    background: #111936;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.time-slot:hover {
+    border-color: #398BFF;
+
+    box-shadow:
+        0 0 10px rgba(57, 139, 255, 0.2);
+}
+
+.time-slot.selected {
+    background: linear-gradient(
+        135deg,
+        #398BFF,
+        #2563EB
+    );
+
+    border-color: #398BFF;
+}
+
+.time-slot.booked {
+    background: #252525;
+
+    color: #777;
+
+    border-color: #444;
+
+    cursor: not-allowed;
+
+    text-decoration: line-through;
+}
+
+.confirm-booking {
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: linear-gradient(
+        135deg,
+        #398BFF,
+        #2563EB
+    );
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.confirm-booking:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+}
+
+.booking-message {
+    margin-top: 12px;
+
+    text-align: center;
+
+    color: #398BFF;
+
+    font-weight: bold;
+}
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 600px) {
+
+            .map-section {
+                padding: 12px;
+            }
+
+
+            .map-header h2 {
+                font-size: 23px;
+            }
+
+
+            .controls {
+                flex-direction: column;
+            }
+
+
+            .search-box,
+            .filter,
+            .location-btn {
+                width: 100%;
+            }
+
+
+            #map {
+                height: 450px;
+            }
+
+        }
+/* ==========================================
+   PAYMENT & REWARDS SECTION
+========================================== */
+#paymentSection {
+    animation: paymentAppear 0.3s ease;
+}
+
+@keyframes paymentAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* Booking summary */
+
+#bookingSummary p {
+    margin: 7px 0;
+}
+
+
+/* Countdown */
+
+#countdown {
+    font-size: 15px;
+}
+
+
+/* Payment buttons */
+
+#payBtn,
+#rewardBtn {
+    transition: 0.2s;
+}
+
+#payBtn:hover,
+#rewardBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(57, 139, 255, 0.3);
+}
+
+
+/* ==========================================
+   CLAIM REWARD SECTION
+========================================== */
+#claimRewardSection {
+    display: none;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid rgba(250, 204, 21, 0.35);
+    border-radius: 12px;
+    background: rgba(250, 204, 21, 0.06);
+    animation: paymentAppear 0.3s ease;
+}
+
+#claimRewardSection h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: #facc15;
+}
+
+#claimRewardSection .reward-points-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+#claimRewardSection .reward-points-val {
+    font-size: 18px;
+    font-weight: bold;
+    color: #facc15;
+}
+
+#claimRewardSection .reward-note {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.map-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(10, 14, 35, 0.92);
+    border-bottom: 1px solid rgba(158, 164, 192, 0.12);
+    backdrop-filter: blur(16px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.map-logo-img {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+
+.map-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.map-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid rgba(158, 164, 192, 0.18);
+    border-radius: 9px;
+    background: rgba(11, 16, 24, 0.35);
+    color: #F5F6F8;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.map-nav-btn:hover {
+    color: #F5F6F8;
+    background: rgba(57, 139, 255, 0.25);
+    border-color: #398BFF;
+    box-shadow: 0 0 12px rgba(57, 139, 255, 0.35);
+}
+
+.map-nav-btn.admin-link {
+    background: rgba(57, 139, 255, 0.15);
+    border-color: rgba(57, 139, 255, 0.35);
+}
+
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid rgba(158, 164, 192, 0.18);
+    border-radius: 9px;
+    background: rgba(11, 16, 24, 0.35);
+    color: #F5F6F8;
+    font-size: 13px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.back-home:hover {
+    color: #398BFF;
+    border-color: #398BFF;
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<section class="map-section">
+
+
+    <!-- HEADER -->
+
+    <!-- TOPBAR WITH OFFICIAL LOGO & NAVIGATION -->
+    <div class="map-topbar">
+        <a href="index.html" title="EVIO — Home">
+            <img src="assets/evio-logo-wordmark.png" alt="EVIO" class="map-logo-img">
+        </a>
+        <div class="map-nav-links">
+            <a href="index.html" class="map-nav-btn"><i class="fas fa-home"></i> Home</a>
+            <a href="index.html#dashboard" class="map-nav-btn"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="index.html#stations" class="map-nav-btn"><i class="fas fa-charging-station"></i> Stations</a>
+        </div>
+    </div>
+
+    <div class="map-header">
+
+        <h2>⚡ EV Charging Stations</h2>
+
+        <p>
+            Find nearby charging stations across Indore
+        </p>
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+
+        <input
+            type="text"
+            id="search"
+            class="search-box"
+            placeholder="🔍 Search Bhawarkua, Vijay Nagar..."
+        >
+
+
+        <select
+            id="filter"
+            class="filter"
+        >
+
+            <option value="all">
+                All Stations
+            </option>
+
+            <option value="AC">
+                AC
+            </option>
+
+            <option value="DC">
+                DC
+            </option>
+
+            <option value="Both">
+                Both
+            </option>
+
+        </select>
+
+
+        <button
+            id="locationBtn"
+            class="location-btn"
+        >
+            📍 Use My Location
+        </button>
+
+
+    </div>
+
+
+    <!-- MAP -->
+
+    <div class="map-container">
+
+        <div id="map"></div>
+
+    </div>
+
+
+</section>
+
+<!-- ==========================================
+     BOOKING MODAL
+========================================== -->
+
+<div id="bookingModal" class="booking-modal">
+
+    <div class="booking-box">
+
+        <button
+            class="close-booking"
+            onclick="closeBooking()"
+        >
+            ×
+        </button>
+
+        <h2>⚡ Book Charging Slot</h2>
+
+        <div
+            id="bookingLocation"
+            class="booking-location"
+        ></div>
+
+        <p>
+    <strong>Select Charging Type</strong>
+</p>
+
+<div class="charging-types">
+
+    <button
+        id="acTypeBtn"
+        class="charging-type-btn"
+        onclick="selectChargingType('AC')"
+    >
+        🔌 AC Charging
+    </button>
+
+    <button
+        id="dcTypeBtn"
+        class="charging-type-btn"
+        onclick="selectChargingType('DC')"
+    >
+        ⚡ DC Fast Charging
+    </button>
+
+</div>
+
+<p>
+    <strong id="slotTitle">
+        Select a charging type first
+    </strong>
+</p>
+
+<div
+    id="timeSlots"
+    class="time-slots"
+></div>
+
+<!-- CLAIM REWARD SECTION -->
+<div id="claimRewardSection">
+
+    <h3>🎁 Claim Reward</h3>
+
+    <div class="reward-points-row">
+        <span>Your Reward Points</span>
+        <span class="reward-points-val" id="claimRewardPoints">0 pts</span>
+    </div>
+
+    <p class="reward-note">
+        1 point = ₹1 • Usable on this booking
+    </p>
+
+</div>
+
+        <!-- PAYMENT / REWARDS SCREEN -->
+<div id="paymentSection" style="display:none; margin-top:20px;">
+
+    <h3 style="color:#398BFF; margin-bottom:15px;">
+        💳 Complete Booking
+    </h3>
+
+    <button
+        class="charging-type-btn"
+        id="payBtn"
+        onclick="completePayment('payment')"
+        style="width:100%; margin-bottom:10px;">
+        💳 Pay Now
+    </button>
+
+    <button
+        class="charging-type-btn"
+        id="rewardBtn"
+        onclick="completePayment('reward')"
+        style="width:100%;">
+        🎁 Claim Using EVIO Rewards
+    </button>
+
+    <p id="countdown"
+       style="
+       text-align:center;
+       color:#facc15;
+       font-weight:bold;
+       margin-top:15px;">
+    </p>
+
+</div>
+
+<button
+    id="confirmBookingBtn"
+    class="confirm-booking"
+    disabled
+    onclick="startBooking()">
+    Continue
+</button>
+
+<div
+    id="bookingMessage"
+    class="booking-message">
+</div>
+
+    </div>
+
+</div>
+<!-- Leaflet JS -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+
+// ==========================================
+// 1. INITIALIZE MAP
+// ==========================================
+
+const map = L.map("map").setView(
+    [22.7196, 75.8577],
+    13
+);
+
+
+// ==========================================
+// 2. OPENSTREETMAP
+// ==========================================
+
+L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        attribution:
+            '&copy; OpenStreetMap contributors'
+    }
+).addTo(map);
+
+
+// ==========================================
+// 3. STATION DATA
+// ==========================================
+
+const stations = [
+
+    {
+        name: "Bhawarkua EV Charging Hub",
+        location: "Bhawarkua, Indore",
+
+        lat: 22.6868,
+        lng: 75.8648,
+
+        ac: true,
+        dc: true,
+
+acSlots: 2,
+dcSlots: 1,
+acTimeSlots: [
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM"
+],
+
+dcTimeSlots: [
+    "09:00 AM",
+    "12:00 PM",
+    "04:00 PM"
+]
+        
+        
+    },
+
+    {
+        name: "Bhawarkua Green Charge",
+        location: "Bhawarkua Square, Indore",
+
+        lat: 22.6879,
+        lng: 75.8675,
+
+        ac: true,
+        dc: false,
+
+acSlots: 2,
+dcSlots: 1,
+acTimeSlots: [
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM"
+],
+
+
+    },
+
+    {
+        name: "Vijay Nagar EV Station",
+        location: "Vijay Nagar, Indore",
+
+        lat: 22.7533,
+        lng: 75.8937,
+
+        ac: true,
+        dc: true,
+
+acSlots: 2,
+dcSlots: 1,
+acTimeSlots: [
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM"
+],
+
+dcTimeSlots: [
+    "09:00 AM",
+    "12:00 PM",
+    "04:00 PM"
+]
+   
+    },
+
+    {
+        name: "Vijay Nagar Fast Charge",
+        location: "Scheme No. 54, Vijay Nagar, Indore",
+
+        lat: 22.7520,
+        lng: 75.9000,
+
+        ac: true,
+        dc: true,
+
+acSlots: 2,
+dcSlots: 1,
+acTimeSlots: [
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM"
+],
+
+dcTimeSlots: [
+    "09:00 AM",
+    "12:00 PM",
+    "04:00 PM"
+]
+   
+    }
+
+];
+
+
+// ==========================================
+// 4. MARKERS
+// ==========================================
+
+let markers = [];
+
+
+// ==========================================
+// 5. CUSTOM CHARGING ICON
+// ==========================================
+
+const chargingIcon = L.divIcon({
+
+    className: "",
+
+    html: `
+        <div class="charging-marker">
+            ⚡
+        </div>
+    `,
+
+    iconSize: [38, 38],
+
+    iconAnchor: [19, 19],
+
+    popupAnchor: [0, -20]
+
+});
+
+
+// ==========================================
+// 6. CREATE POPUP
+// ==========================================
+
+function createPopup(station) {
+
+    const acText = station.ac
+        ? `<span class="available">Available</span>`
+        : `<span class="unavailable">Not Available</span>`;
+
+
+    const dcText = station.dc
+        ? `<span class="available">Available</span>`
+        : `<span class="unavailable">Not Available</span>`;
+
+
+    return `
+
+        <div class="popup">
+
+            <h3>
+                ⚡ ${station.name}
+            </h3>
+
+
+            <p>
+                <strong>📍 Location:</strong>
+                ${station.location}
+            </p>
+
+
+            <p>
+                <strong>🔌 AC:</strong>
+                ${acText}
+            </p>
+
+
+            <p>
+                <strong>⚡ DC:</strong>
+                ${dcText}
+            </p>
+
+
+            <p>
+    <strong>🅿️ Available Slots:</strong>
+
+    <span class="available">
+        ${station.availableACSlots} (AC)
+    </span>
+
+    +
+
+    <span class="available">
+        ${station.availableDCSlots} (DC)
+    </span>
+</p>
+
+
+            <p>
+                <strong>💰 Price:</strong>
+                ₹${station.price}/kWh
+            </p>
+
+
+            <button
+                class="view-btn"
+                onclick="openBooking('${station.name}')"
+            >
+                Book Slot
+            </button>
+
+        </div>
+
+    `;
+}
+
+
+// ==========================================
+// 7. DISPLAY STATIONS
+// ==========================================
+
+// ==========================================
+// 7. DISPLAY STATIONS
+// ==========================================
+
+function displayStations(stationList) {
+
+    markers.forEach(marker => {
+        map.removeLayer(marker);
+    });
+
+    markers = [];
+
+
+    const bookedSlots =
+        getBookedSlots();
+
+
+    stationList.forEach(station => {
+
+        const stationBookings =
+            bookedSlots[station.name] || {
+                AC: [],
+                DC: []
+            };
+
+
+        const acBooked =
+            stationBookings.AC || [];
+
+        const dcBooked =
+            stationBookings.DC || [];
+
+
+        // Calculate available AC slots
+        const availableACSlots =
+            station.ac
+                ? Math.max(
+                    station.acTimeSlots.length -
+                    acBooked.length,
+                    0
+                )
+                : 0;
+
+
+        // Calculate available DC slots
+        const availableDCSlots =
+            station.dc
+                ? Math.max(
+                    station.dcTimeSlots.length -
+                    dcBooked.length,
+                    0
+                )
+                : 0;
+
+
+        // Store current available values
+        station.availableACSlots =
+            availableACSlots;
+
+        station.availableDCSlots =
+            availableDCSlots;
+
+
+        const marker = L.marker(
+            [
+                station.lat,
+                station.lng
+            ],
+            {
+                icon: chargingIcon
+            }
+        ).addTo(map);
+
+
+        marker.bindPopup(
+            createPopup(station)
+        );
+
+
+        markers.push(marker);
+
+    });
+
+}
+
+// Show all stations
+
+displayStations(stations);
+
+// BOOKING SYSTEM
+// ==========================================
+
+let selectedStation = null;
+let selectedTime = null;
+let selectedChargingType = null;
+
+let holdTimer = null;
+let holdSeconds = 60;
+
+
+// ==========================================
+// GET BOOKED SLOTS
+// ==========================================
+
+function getBookedSlots() {
+
+    return JSON.parse(
+        localStorage.getItem("evioBookedSlots")
+    ) || {};
+
+}
+
+
+// ==========================================
+// SAVE BOOKED SLOTS
+// ==========================================
+
+function saveBookedSlots(bookedSlots) {
+
+    localStorage.setItem(
+        "evioBookedSlots",
+        JSON.stringify(bookedSlots)
+    );
+
+}
+
+
+// ==========================================
+// CLAIM REWARD SECTION
+// ==========================================
+
+function getRewardPoints() {
+
+    try {
+        const saved = JSON.parse(
+            localStorage.getItem("voltad_state")
+        );
+
+        if (
+            saved &&
+            saved.user &&
+            typeof saved.user.points === "number"
+        ) {
+            return saved.user.points;
+        }
+    }
+    catch (e) {}
+
+    return 150;
+
+}
+
+function showClaimReward() {
+
+    document.getElementById("claimRewardPoints").innerText =
+        getRewardPoints() + " pts";
+
+    document.getElementById("claimRewardSection")
+        .style.display = "block";
+
+}
+
+function hideClaimReward() {
+
+    document.getElementById("claimRewardSection")
+        .style.display = "none";
+
+}
+
+
+// ==========================================
+// OPEN BOOKING MODAL
+// ==========================================
+
+function openBooking(stationName) {
+
+    const station = stations.find(
+        s => s.name === stationName
+    );
+
+    if (!station) return;
+
+    selectedStation = station;
+    selectedTime = null;
+    selectedChargingType = null;
+
+    clearInterval(holdTimer);
+
+    document.getElementById("paymentSection").style.display = "none";
+    hideClaimReward();
+
+    document.getElementById("acTypeBtn")
+        .classList.remove("selected");
+
+    document.getElementById("dcTypeBtn")
+        .classList.remove("selected");
+
+    document.getElementById("slotTitle").innerText =
+        "Select a charging type first";
+
+    document.getElementById("timeSlots").innerHTML = "";
+
+    document.getElementById("bookingMessage").innerText = "";
+
+    document.getElementById("confirmBookingBtn").disabled = true;
+    document.getElementById("confirmBookingBtn").innerText =
+        "Continue";
+
+    document.getElementById("bookingLocation").innerText =
+        `${station.name} • ${station.location}`;
+
+    document.getElementById("bookingModal").style.display =
+        "flex";
+
+}
+
+
+// ==========================================
+// CLOSE BOOKING
+// ==========================================
+
+function closeBooking() {
+
+    clearInterval(holdTimer);
+
+    document.getElementById("bookingModal").style.display =
+        "none";
+
+    selectedStation = null;
+    selectedTime = null;
+    selectedChargingType = null;
+
+    document.getElementById("paymentSection").style.display =
+        "none";
+    hideClaimReward();
+
+    document.getElementById("timeSlots").innerHTML = "";
+
+    document.getElementById("slotTitle").innerText =
+        "Select a charging type first";
+
+    document.getElementById("bookingMessage").innerText = "";
+
+    document.getElementById("confirmBookingBtn").disabled =
+        true;
+
+}
+
+
+// ==========================================
+// SHOW TIME SLOTS
+// ==========================================
+
+function showTimeSlots(station) {
+
+    const container =
+        document.getElementById("timeSlots");
+
+    container.innerHTML = "";
+
+    if (!selectedChargingType) {
+        return;
+    }
+
+    const bookedSlots = getBookedSlots();
+
+    const stationBookings =
+        bookedSlots[station.name] || {
+            AC: [],
+            DC: []
+        };
+
+    const stationBookedSlots =
+        stationBookings[selectedChargingType] || [];
+
+    const availableTimeSlots =
+        selectedChargingType === "AC"
+            ? station.acTimeSlots
+            : station.dcTimeSlots;
+
+
+    availableTimeSlots.forEach(time => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "time-slot";
+
+        button.innerText = time;
+
+
+        // Already booked
+        if (stationBookedSlots.includes(time)) {
+
+            button.classList.add("booked");
+
+            button.disabled = true;
+
+            button.innerText =
+                `${time} • Booked`;
+
+        }
+
+        else {
+
+            button.onclick = function () {
+
+                selectTimeSlot(
+                    time,
+                    button
+                );
+
+            };
+
+        }
+
+        container.appendChild(button);
+
+    });
+
+}
+
+
+// ==========================================
+// SELECT CHARGING TYPE
+// ==========================================
+
+function selectChargingType(type) {
+
+    if (!selectedStation) return;
+
+
+    if (
+        type === "AC" &&
+        !selectedStation.ac
+    ) {
+
+        alert(
+            "AC charging is not available at this station."
+        );
+
+        return;
+    }
+
+
+    if (
+        type === "DC" &&
+        !selectedStation.dc
+    ) {
+
+        alert(
+            "DC charging is not available at this station."
+        );
+
+        return;
+    }
+
+
+    selectedChargingType = type;
+    selectedTime = null;
+    hideClaimReward();
+
+
+    document.getElementById("acTypeBtn")
+        .classList.remove("selected");
+
+    document.getElementById("dcTypeBtn")
+        .classList.remove("selected");
+
+
+    if (type === "AC") {
+
+        document.getElementById("acTypeBtn")
+            .classList.add("selected");
+
+    }
+    else {
+
+        document.getElementById("dcTypeBtn")
+            .classList.add("selected");
+
+    }
+
+
+    document.getElementById("slotTitle").innerText =
+        `${type} Charging — Available Time Slots`;
+
+
+    document.getElementById("confirmBookingBtn").disabled =
+        true;
+
+
+    showTimeSlots(selectedStation);
+
+}
+
+
+// ==========================================
+// SELECT TIME SLOT
+// ==========================================
+
+function selectTimeSlot(
+    time,
+    button
+) {
+
+    document
+        .querySelectorAll(".time-slot")
+        .forEach(btn => {
+
+            btn.classList.remove("selected");
+
+        });
+
+
+    button.classList.add("selected");
+
+    selectedTime = time;
+
+
+    document.getElementById(
+        "confirmBookingBtn"
+    ).disabled = false;
+
+    showClaimReward();
+
+}
+
+
+// ==========================================
+// START BOOKING
+// ==========================================
+
+function startBooking() {
+
+    if (
+        !selectedStation ||
+        !selectedTime ||
+        !selectedChargingType
+    ) {
+
+        alert(
+            "Please select charging type and time slot."
+        );
+
+        return;
+    }
+
+
+    // Check again before holding slot
+    const bookedSlots = getBookedSlots();
+
+    const stationBookings =
+        bookedSlots[selectedStation.name] || {
+            AC: [],
+            DC: []
+        };
+
+
+    const booked =
+        stationBookings[selectedChargingType] || [];
+
+
+    if (booked.includes(selectedTime)) {
+
+        alert(
+            "Sorry! This slot was just booked."
+        );
+
+        showTimeSlots(selectedStation);
+
+        return;
+    }
+
+
+    // ------------------------------------------
+    // TEMPORARY HOLD
+    // ------------------------------------------
+
+    holdSeconds = 60;
+
+    document.getElementById(
+        "paymentSection"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "confirmBookingBtn"
+    ).style.display = "none";
+    updateCountdown();
+
+
+    clearInterval(holdTimer);
+
+    holdTimer = setInterval(
+        countdown,
+        1000
+    );
+
+}
+
+
+// ==========================================
+// COUNTDOWN
+// ==========================================
+
+function updateCountdown() {
+
+    const seconds =
+        holdSeconds < 10
+            ? "0" + holdSeconds
+            : holdSeconds;
+
+    document.getElementById(
+        "countdown"
+    ).innerText =
+        `⏱️ Slot reserved for you: 00:${seconds}`;
+
+}
+
+
+function countdown() {
+
+    holdSeconds--;
+
+    updateCountdown();
+
+
+    if (holdSeconds <= 0) {
+
+        clearInterval(holdTimer);
+
+        bookingExpired();
+
+    }
+
+}
+
+
+// ==========================================
+// BOOKING EXPIRED
+// ==========================================
+
+function bookingExpired() {
+
+    document.getElementById(
+        "paymentSection"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "confirmBookingBtn"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "confirmBookingBtn"
+    ).disabled = true;
+
+
+    document.getElementById(
+        "bookingMessage"
+    ).style.color = "#ef4444";
+
+
+    document.getElementById(
+        "bookingMessage"
+    ).innerText =
+        "⏰ Reservation expired. Please select the slot again.";
+
+
+    selectedTime = null;
+    hideClaimReward();
+
+
+    showTimeSlots(selectedStation);
+
+}
+
+
+// ==========================================
+// PAYMENT / REWARDS
+// ==========================================
+
+function completePayment(method) {
+
+    if (
+        !selectedStation ||
+        !selectedTime ||
+        !selectedChargingType
+    ) {
+
+        return;
+    }
+
+
+    // Stop countdown
+    clearInterval(holdTimer);
+
+
+    const bookedSlots = getBookedSlots();
+
+
+    // Create station booking
+    if (!bookedSlots[selectedStation.name]) {
+
+        bookedSlots[selectedStation.name] = {
+            AC: [],
+            DC: []
+        };
+
+    }
+
+
+    if (
+        !bookedSlots[selectedStation.name]
+            [selectedChargingType]
+    ) {
+
+        bookedSlots[selectedStation.name]
+            [selectedChargingType] = [];
+
+    }
+
+
+    const stationBookings =
+        bookedSlots[selectedStation.name]
+            [selectedChargingType];
+
+
+    // Prevent duplicate booking
+    if (
+        stationBookings.includes(selectedTime)
+    ) {
+
+        alert(
+            "This slot is already booked."
+        );
+
+        return;
+    }
+
+
+    // ------------------------------------------
+    // SAVE FINAL BOOKING
+    // ------------------------------------------
+
+    stationBookings.push(selectedTime);
+
+    saveBookedSlots(bookedSlots);
+
+
+    // ------------------------------------------
+    // BOOKING ID
+    // ------------------------------------------
+
+    const bookingId =
+        "EVIO-" +
+        Math.floor(
+            10000 + Math.random() * 90000
+        );
+
+
+    // ------------------------------------------
+    // SUCCESS MESSAGE
+    // ------------------------------------------
+
+    const methodText =
+        method === "payment"
+            ? "💳 Payment Successful"
+            : "🎁 Rewards Claimed";
+
+
+    document.getElementById(
+        "paymentSection"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "bookingMessage"
+    ).style.color = "#398BFF";
+
+
+    document.getElementById(
+        "bookingMessage"
+    ).innerHTML = `
+
+        ${methodText}<br><br>
+
+        ✅ <strong>Booking Confirmed!</strong><br>
+
+        ${selectedChargingType}
+        charging at
+        ${selectedTime}<br><br>
+
+        <strong>Booking ID:</strong>
+        ${bookingId}
+
+    `;
+
+
+    // ------------------------------------------
+    // SAVE BOOKING HISTORY (shown in Profile)
+    // ------------------------------------------
+
+    try {
+        const history = JSON.parse(
+            localStorage.getItem("evioBookingHistory")
+        ) || [];
+
+        history.unshift({
+            id: bookingId,
+            stationName: selectedStation.name,
+            address: selectedStation.location,
+            chargingType: selectedChargingType,
+            date: new Date().toLocaleDateString(
+                "en-GB",
+                { day: "2-digit", month: "short", year: "numeric" }
+            ),
+            time: selectedTime,
+            status: "Confirmed"
+        });
+
+        localStorage.setItem(
+            "evioBookingHistory",
+            JSON.stringify(history)
+        );
+    }
+    catch (e) {}
+
+
+    // ------------------------------------------
+    // RESET
+    // ------------------------------------------
+
+    selectedTime = null;
+    hideClaimReward();
+
+
+    document.getElementById(
+        "confirmBookingBtn"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "confirmBookingBtn"
+    ).disabled = true;
+
+
+    // Refresh slots
+    showTimeSlots(selectedStation);
+
+
+    // Refresh station popup
+    refreshStationPopup(selectedStation);
+
+}
+
+
+
+// ------------------------------------------
+// UPDATE POPUP AFTER BOOKING
+// ------------------------------------------
+
+function refreshStationPopup(station) {
+
+    markers.forEach(marker => {
+
+        marker.closePopup();
+
+    });
+
+
+    // Recreate markers so updated slot
+    // count is visible
+    displayStations(
+        getCurrentlyFilteredStations()
+    );
+
+}
+
+
+// ------------------------------------------
+// GET CURRENT FILTERED STATIONS
+// ------------------------------------------
+
+function getCurrentlyFilteredStations() {
+
+    const searchText =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+
+    const selectedFilter =
+        filter.value;
+
+
+    return stations.filter(station => {
+
+        const matchesSearch =
+
+            station.name
+                .toLowerCase()
+                .includes(searchText)
+
+            ||
+
+            station.location
+                .toLowerCase()
+                .includes(searchText);
+
+
+        let matchesFilter = true;
+
+
+        if (selectedFilter === "AC") {
+
+            matchesFilter =
+                station.ac;
+
+        }
+
+
+        else if (
+            selectedFilter === "DC"
+        ) {
+
+            matchesFilter =
+                station.dc;
+
+        }
+
+
+        else if (
+            selectedFilter === "Both"
+        ) {
+
+            matchesFilter =
+                station.ac &&
+                station.dc;
+
+        }
+
+
+        return (
+            matchesSearch &&
+            matchesFilter
+        );
+
+    });
+
+}
+
+
+// ==========================================
+// 9. SEARCH + FILTER
+// ==========================================
+
+const searchInput =
+    document.getElementById("search");
+
+
+const filter =
+    document.getElementById("filter");
+
+
+function filterStations() {
+
+
+    const searchText =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+
+    const selectedFilter =
+        filter.value;
+
+
+    const filtered =
+        stations.filter(station => {
+
+
+            const matchesSearch =
+
+                station.name
+                    .toLowerCase()
+                    .includes(searchText)
+
+                ||
+
+                station.location
+                    .toLowerCase()
+                    .includes(searchText);
+
+
+            let matchesFilter = true;
+
+
+            if (selectedFilter === "AC") {
+
+                matchesFilter =
+                    station.ac;
+
+            }
+
+
+            else if (selectedFilter === "DC") {
+
+                matchesFilter =
+                    station.dc;
+
+            }
+
+
+            else if (selectedFilter === "Both") {
+
+                matchesFilter =
+                    station.ac &&
+                    station.dc;
+
+            }
+
+
+            return (
+                matchesSearch &&
+                matchesFilter
+            );
+
+        });
+
+
+    displayStations(filtered);
+
+
+    // Zoom to matching stations
+
+    if (filtered.length > 0) {
+
+
+        const bounds =
+            filtered.map(station => [
+
+                station.lat,
+
+                station.lng
+
+            ]);
+
+
+        map.fitBounds(
+            bounds,
+            {
+                padding: [40, 40]
+            }
+        );
+
+    }
+
+}
+
+
+// Search listener
+
+searchInput.addEventListener(
+    "input",
+    filterStations
+);
+
+
+// Filter listener
+
+filter.addEventListener(
+    "change",
+    filterStations
+);
+
+
+// ==========================================
+// 10. USE MY LOCATION
+// ==========================================
+
+document
+    .getElementById("locationBtn")
+    .addEventListener(
+        "click",
+        function () {
+
+
+            if (!navigator.geolocation) {
+
+                alert(
+                    "Geolocation is not supported by your browser."
+                );
+
+                return;
+            }
+
+
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+
+                    const lat =
+                        position.coords.latitude;
+
+
+                    const lng =
+                        position.coords.longitude;
+
+
+                    // Move map to user
+
+                    map.setView(
+                        [lat, lng],
+                        15
+                    );
+
+
+                    // Add user marker
+
+                    L.marker([
+                        lat,
+                        lng
+                    ])
+
+                    .addTo(map)
+
+                    .bindPopup(
+                        "📍 You are here"
+                    )
+
+                    .openPopup();
+
+
+                },
+
+
+                function (error) {
+
+
+                    if (error.code === 1) {
+
+                        alert(
+                            "Location permission denied. Please allow location access."
+                        );
+
+                    }
+
+                    else if (error.code === 2) {
+
+                        alert(
+                            "Unable to determine your location."
+                        );
+
+                    }
+
+                    else {
+
+                        alert(
+                            "Unable to get your location."
+                        );
+
+                    }
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+</script>
+
+
+</body>
+</html>

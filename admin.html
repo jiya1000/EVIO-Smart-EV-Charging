@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/evio-logo-icon.png">
+  <title>EVIO — Admin Control Panel</title>
+  <meta name="description" content="Restricted admin area for EVIO platform management.">
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #030405;
+      --surface: rgba(11, 16, 24, 0.75);
+      --surface2: rgba(14, 20, 30, 0.55);
+      --border: rgba(130, 155, 190, 0.14);
+      --border2: rgba(130, 155, 190, 0.22);
+      --text1: #F5F6F8;
+      --text2: #A0A5B0;
+      --text3: #505562;
+      --blue-electric: #398BFF;
+      --blue-royal: #2563EB;
+      --indigo: #0B1018;
+      --primary: #398BFF;
+      --primary2: #2563EB;
+      --green: #398BFF;
+      --green2: #2563EB;
+      --blue: #398BFF;
+      --red: #ef4444;
+      --gold: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+      --sidebar-w: 260px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text1);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Stars Background */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(11, 16, 24, 0.25) 0%, transparent 50%);
+    }
+
+    /* LOGIN SCREEN */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+
+    .login-wrap {
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(10, 14, 35, 0.95);
+      border: 1px solid rgba(158, 164, 192, 0.16);
+      border-radius: 20px;
+      padding: 44px 40px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8), 0 0 40px -10px rgba(57, 139, 255, 0.35);
+      position: relative;
+      overflow: hidden;
+      animation: loginPanelSpringBounce 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes loginPanelSpringBounce {
+      0% {
+        opacity: 0;
+        transform: translateY(32px) scale(0.96);
+      }
+      60% {
+        opacity: 1;
+        transform: translateY(-5px) scale(1.012);
+      }
+      80% {
+        transform: translateY(2px) scale(0.998);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #0B1018, #398BFF, #2563EB);
+      background-size: 200% auto;
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: 200% center;
+      }
+    }
+
+        @keyframes adminElemSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-card 
+    .admin-logo-img {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+    }
+    .admin-sidebar-logo-img {
+      height: 26px;
+      width: auto;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .login-logo {
+      animation: adminElemSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
+    .login-card .admin-badge {
+      animation: adminElemSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+    }
+    .login-card .login-title,
+    .login-card .login-sub {
+      animation: adminElemSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+    }
+    .login-card .form-group:nth-of-type(1) {
+      animation: adminElemSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+    }
+    .login-card .form-group:nth-of-type(2) {
+      animation: adminElemSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.40s both;
+    }
+    .login-card .btn-login {
+      animation: adminElemSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.46s both;
+    }
+
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 32px;
+    }
+
+    .login-logo .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #398BFF, #2563EB);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(57, 139, 255, 0.18);
+      border: 1px solid rgba(57, 139, 255, 0.35);
+      color: var(--blue-electric);
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .login-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border2);
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text1);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .form-input::placeholder {
+      color: var(--text3);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-login:hover {
+      opacity: 0.9;
+    }
+
+    .btn-login:active {
+      transform: scale(0.99);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .login-error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-top: 14px;
+      display: none;
+    }
+
+    .login-back {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text3);
+    }
+
+    .login-back a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .login-back a:hover {
+      text-decoration: underline;
+    }
+
+    .lock-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--blue);
+      margin-bottom: 20px;
+    }
+
+    /* ADMIN PANEL */
+    #admin-panel {
+      display: none;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    .admin-topbar {
+      position: fixed;
+      top: 0;
+      left: var(--sidebar-w);
+      right: 0;
+      height: 64px;
+      background: rgba(6, 13, 24, 0.9);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 50;
+    }
+
+    .topbar-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 50px;
+      padding: 6px 14px 6px 8px;
+    }
+
+    .admin-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #398BFF, #2563EB);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .admin-user-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .btn-logout-top {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-logout-top:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 51;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 800;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-logo .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #398BFF, #2563EB);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .sidebar-admin-tag {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: rgba(57, 139, 255, 0.2); border: 1px solid rgba(57, 139, 255, 0.35);
+      color: var(--blue-electric);
+      border-radius: 4px;
+      padding: 2px 6px;
+      text-transform: uppercase;
+      margin-left: auto;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+      overflow-y: auto;
+    }
+
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 14px 10px 6px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text2);
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 2px;
+    }
+
+    .sidebar-item:hover {
+      background: var(--surface2);
+      color: var(--text1);
+    }
+
+    .sidebar-item.active {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--blue);
+    }
+
+    .sidebar-item i {
+      width: 18px;
+      text-align: center;
+    }
+
+    .admin-content {
+      margin-left: var(--sidebar-w);
+      margin-top: 64px;
+      padding: 28px;
+      min-height: calc(100vh - 64px);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stat-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .stat-icon.green {
+      background: rgba(57, 139, 255, 0.18);
+      color: var(--blue-electric);
+    }
+
+    .stat-icon.blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--blue);
+    }
+
+    .stat-icon.gold {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--gold);
+    }
+
+    .stat-icon.red {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--red);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 500;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      color: var(--blue-electric);
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      color: var(--blue);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text3);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 13px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: var(--surface2);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgba(57, 139, 255, 0.18);
+      color: var(--blue-electric);
+    }
+
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--blue);
+    }
+
+    .badge-gold {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--gold);
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--red);
+    }
+
+    .badge-muted {
+      background: var(--surface2);
+      color: var(--text2);
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 100px;
+      padding: 0 4px;
+    }
+
+    .chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chart-bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, var(--blue), rgba(59, 130, 246, 0.3));
+      min-height: 4px;
+    }
+
+    .chart-bar:hover {
+      background: linear-gradient(180deg, #398BFF, rgba(37, 99, 235, 0.3));
+    }
+
+    .chart-day {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 600;
+    }
+
+    .subview {
+      display: none;
+    }
+
+    .subview.active {
+      display: block;
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+      animation: slideIn 0.3s ease;
+      max-width: 320px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .toast.success {
+      border-left: 3px solid var(--blue-electric);
+    }
+
+    .toast.error {
+      border-left: 3px solid var(--red);
+    }
+
+    .toast.info {
+      border-left: 3px solid var(--blue);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(30px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border2);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: var(--text2);
+    }
+
+    /* ── Forgot Password Modal ── */
+    .fp-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fp-modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+    }
+
+    .fp-modal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #0B1018, #398BFF, #2563EB);
+      background-size: 200% auto;
+      animation: shimmer 3s linear infinite;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .fp-step {
+      display: none;
+    }
+
+    .fp-step.active {
+      display: block;
+    }
+
+    .fp-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .fp-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 56px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text1);
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .otp-digit:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+    }
+
+    .fp-success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(57, 139, 255, 0.18);
+      border: 2px solid rgba(57, 139, 255, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: var(--blue-electric);
+      margin: 0 auto 20px;
+    }
+
+    .fp-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text3);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .fp-close-btn:hover {
+      color: var(--text1);
+      background: var(--surface2);
+    }
+
+    .fp-back {
+      font-size: 13px;
+      color: var(--blue);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 14px;
+    }
+
+    .fp-back:hover {
+      text-decoration: underline;
+    }
+
+    .fp-err {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .resend-link {
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .resend-link a {
+      color: var(--blue);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .resend-link a:hover {
+      text-decoration: underline;
+    }
+
+    .pass-strength {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 6px;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    .users-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .user-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .user-ava {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #398BFF, #2563EB);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 12px;
+      color: var(--text2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .campaign-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .campaign-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .campaign-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .campaign-meta {
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .campaign-spend {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue-electric);
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .dot-available {
+      background: var(--blue-electric); box-shadow: 0 0 8px rgba(57, 139, 255, 0.55);
+    }
+
+    .dot-busy {
+      background: var(--gold);
+    }
+
+    .dot-maintenance {
+      background: var(--red);
+    }
+
+    .page-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .page-hdr-title {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .page-hdr-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text1);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s;
+      }
+
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .admin-topbar {
+        left: 0;
+      }
+
+      .admin-content {
+        margin-left: 0;
+      }
+
+      .mobile-menu-btn {
+        display: flex !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="stars"></div>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Verifying session…</div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-logo">
+          <img src="assets/evio-logo-wordmark.png" alt="EVIO" class="admin-logo-img">
+          <span class="admin-badge" style="margin-left: 8px; margin-bottom: 0;">Admin</span>
+        </div>
+        <div class="lock-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="admin-badge"><i class="fas fa-user-shield"></i> Restricted Area</div>
+        <div class="login-title">Admin Sign In</div>
+        <div class="login-sub">This portal is exclusively for EVIO administrators. Unauthorized access attempts are
+          logged.</div>
+
+        <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+          <div class="form-group">
+            <label for="admin-email">Administrator Email</label>
+            <input type="email" id="admin-email" class="form-input" placeholder="pjiya4285@gmail.com" value="pjiya4285@gmail.com" required
+              autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="admin-password">Password</label>
+            <div style="position: relative;">
+              <input type="password" id="admin-password" class="form-input" placeholder="••••••••" required
+                autocomplete="current-password" style="padding-right: 40px;">
+              <button type="button" onclick="toggleAdminPassVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text2); cursor: pointer; padding: 4px;" aria-label="Toggle password visibility">
+                <i id="admin-pass-eye" class="far fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div style="text-align:right;margin-bottom:14px;">
+            <span id="open-forgot-pw" onclick="openForgotPassword()"
+              style="font-size:13px;color:var(--blue);cursor:pointer;text-decoration:none;">
+              <i class="fas fa-key" style="margin-right:3px;"></i>Forgot password?
+            </span>
+          </div>
+          <button type="submit" class="btn-login" id="login-submit-btn">
+            <i class="fas fa-lock-open"></i> Sign In to Admin Panel
+          </button>
+          <button type="button" class="btn-login" onclick="quickAdminDemoLogin()" style="margin-top: 10px; background: rgba(57, 139, 255, 0.18); border: 1px solid rgba(57, 139, 255, 0.45); color: #F5F6F8;">
+            <i class="fas fa-bolt" style="color: var(--blue-electric); margin-right: 6px;"></i> Instant 1-Click Admin Sign-In
+          </button>
+          <div class="login-error" id="login-error-msg"></div>
+        </form>
+
+        <div class="login-back" style="margin-top: 24px; text-align: center;">
+          <a href="/" style="display: inline-flex; align-items: center; gap: 6px; color: var(--text2); text-decoration: none; font-size: 13px;">
+            <i class="fas fa-arrow-left"></i> Return to EVIO Main Site
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD MODAL -->
+  <div class="fp-modal-backdrop" id="fpBackdrop" style="display:none;">
+    <div class="fp-modal">
+      <button class="fp-close-btn" onclick="closeForgotPassword()" title="Close"><i class="fas fa-times"></i></button>
+
+      <!-- Step 1: Enter Email -->
+      <div class="fp-step active" id="fp-step-1">
+        <div style="font-size:28px;color:var(--blue);margin-bottom:14px;"><i class="fas fa-envelope-open-text"></i>
+        </div>
+        <div class="fp-title">Forgot Password?</div>
+        <div class="fp-sub">Enter your admin email address and we'll send a 6-digit verification code to reset your
+          password.</div>
+        <div class="form-group">
+          <label for="fp-email">Admin Email Address</label>
+          <input type="email" id="fp-email" class="form-input" placeholder="pjiya4285@gmail.com" autocomplete="email">
+        </div>
+        <button class="btn-login" id="fp-send-btn" onclick="handleForgotPasswordSend()">
+          <i class="fas fa-paper-plane"></i> Send Reset Code
+        </button>
+        <div class="fp-err" id="fp-err-1"></div>
+      </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div class="fp-step" id="fp-step-2">
+        <div style="font-size:28px;color:var(--blue-electric);margin-bottom:14px;"><i class="fas fa-shield-alt"></i></div>
+        <div class="fp-title">Enter Verification Code</div>
+        <div class="fp-sub">A 6-digit code has been sent to <strong id="fp-email-display"></strong>. Enter it below
+          (valid for 10 minutes).</div>
+        <div class="otp-inputs" id="fp-otp-boxes">
+          <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        </div>
+        <button class="btn-login" id="fp-verify-btn" onclick="handleForgotPasswordVerify()">
+          <i class="fas fa-check-circle"></i> Verify Code
+        </button>
+        <div class="resend-link">Didn't receive the code? <a onclick="handleForgotPasswordSend(true)">Resend</a></div>
+        <div class="fp-err" id="fp-err-2"></div>
+        <div class="fp-back" onclick="fpGoStep(1)"><i class="fas fa-arrow-left"></i> Back</div>
+      </div>
+
+      <!-- Step 3: Set New Password -->
+      <div class="fp-step" id="fp-step-3">
+        <div style="font-size:28px;color:var(--blue);margin-bottom:14px;"><i class="fas fa-lock"></i></div>
+        <div class="fp-title">Set New Password</div>
+        <div class="fp-sub">Choose a strong new password for your admin account.</div>
+        <div class="form-group">
+          <label for="fp-new-pass">New Password</label>
+          <input type="password" id="fp-new-pass" class="form-input" placeholder="Min 8 characters"
+            oninput="checkPassStrength(this.value)" autocomplete="new-password">
+          <div style="background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden;height:4px;">
+            <div id="fp-pass-bar" style="height:4px;width:0%;border-radius:2px;transition:width 0.3s,background 0.3s;">
+            </div>
+          </div>
+          <div id="fp-pass-hint" style="font-size:11px;color:var(--text3);margin-top:4px;"></div>
+        </div>
+        <div class="form-group">
+          <label for="fp-confirm-pass">Confirm Password</label>
+          <input type="password" id="fp-confirm-pass" class="form-input" placeholder="Re-enter new password"
+            autocomplete="new-password">
+        </div>
+        <button class="btn-login" id="fp-reset-btn" onclick="handleForgotPasswordReset()">
+          <i class="fas fa-save"></i> Reset Password
+        </button>
+        <div class="fp-err" id="fp-err-3"></div>
+        <div class="fp-back" onclick="fpGoStep(2)"><i class="fas fa-arrow-left"></i> Back</div>
+      </div>
+
+      <!-- Step 4: Success -->
+      <div class="fp-step" id="fp-step-4">
+        <div class="fp-success-icon"><i class="fas fa-check"></i></div>
+        <div class="fp-title" style="text-align:center;">Password Reset!</div>
+        <div class="fp-sub" style="text-align:center;">Your password has been reset successfully. You can now sign in
+          with your new password.</div>
+        <button class="btn-login" onclick="closeForgotPassword()" style="margin-top:10px;">
+          <i class="fas fa-sign-in-alt"></i> Back to Sign In
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="admin-panel">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-logo" onclick="window.location.href='/'" style="cursor: pointer;" title="Return to EVIO Main Site">
+        <img src="assets/evio-logo-wordmark.png" alt="EVIO" class="admin-sidebar-logo-img" style="height: 26px;">
+        <span class="sidebar-admin-tag">Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-label">Dashboard</div>
+        <div class="sidebar-item active" id="nav-overview" onclick="showView('overview')">
+          <i class="fas fa-chart-pie"></i> Overview
+        </div>
+        <div class="sidebar-label">Management</div>
+        <div class="sidebar-item" id="nav-users" onclick="showView('users')">
+          <i class="fas fa-users"></i> Users
+        </div>
+        <div class="sidebar-item" id="nav-stations" onclick="showView('stations')">
+          <i class="fas fa-charging-station"></i> Stations
+        </div>
+        <div class="sidebar-item" id="nav-bookings" onclick="showView('bookings')">
+          <i class="fas fa-calendar-check"></i> Bookings
+        </div>
+        <div class="sidebar-item" id="nav-campaigns" onclick="showView('campaigns')">
+          <i class="fas fa-bullhorn"></i> Ad Campaigns
+        </div>
+      </nav>
+      <div style="margin-top:auto;padding:16px;border-top:1px solid var(--border);">
+        <a href="/" style="display:flex;align-items:center;gap:10px;color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;padding:8px 12px;border-radius:8px;background:var(--surface2);" title="Go to Main Website">
+          <i class="fas fa-arrow-left" style="color:var(--blue-electric)"></i> Main Website
+        </a>
+      </div>
+    </aside>
+
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="mobile-menu-btn" onclick="document.getElementById('adminSidebar').classList.toggle('open')">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span class="topbar-title" id="topbar-title">Dashboard Overview</span>
+      </div>
+      <div class="topbar-right">
+        <a href="/" style="display:flex;align-items:center;gap:6px;background:rgba(57, 139, 255,0.12);border:1px solid rgba(57, 139, 255,0.3);color:var(--text1);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;text-decoration:none;transition:background 0.2s;" title="Return to EVIO Main Website">
+          <i class="fas fa-external-link-alt" style="color:var(--blue-electric);font-size:12px;"></i> View Main Site
+        </a>
+        <div class="admin-user-pill">
+          <div class="admin-avatar" id="admin-avatar-top">A</div>
+          <span class="admin-user-name" id="admin-name-top">Admin</span>
+        </div>
+        <button class="btn-logout-top" onclick="adminLogout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+
+      <!-- Overview -->
+      <div class="subview active" id="view-overview">
+        <div class="page-hdr">
+          <div>
+            <div class="page-hdr-title">Control Panel Overview</div>
+            <div class="page-hdr-sub">Real-time metrics across the EVIO network</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-top">
+              <div class="stat-icon green"><i class="fas fa-bolt"></i></div>
+            </div>
+            <div class="stat-value" id="stat-sessions">—</div>
+            <div class="stat-label">Active Sessions</div>
+            <div class="stat-change">↑ Live data</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-top">
+              <div class="stat-icon blue"><i class="fas fa-charging-station"></i></div>
+            </div>
+            <div class="stat-value" id="stat-stations">—</div>
+            <div class="stat-label">Total Stations</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-top">
+              <div class="stat-icon gold"><i class="fas fa-bullhorn"></i></div>
+            </div>
+            <div class="stat-value" id="stat-campaigns">—</div>
+            <div class="stat-label">Active Advertisers</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-top">
+              <div class="stat-icon red"><i class="fas fa-rupee-sign"></i></div>
+            </div>
+            <div class="stat-value" id="stat-spend">—</div>
+            <div class="stat-label">Total Ad Spend</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><i class="fas fa-chart-bar"></i> Weekly Energy Delivered (MWh)</div>
+          <div class="chart-bars" id="weekly-chart"></div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="subview" id="view-users">
+        <div class="page-hdr">
+          <div>
+            <div class="page-hdr-title">Registered Users</div>
+            <div class="page-hdr-sub">All EVIO platform users</div>
+          </div>
+        </div>
+        <div class="users-grid" id="users-grid">
+          <div style="color:var(--text2);font-size:13px;">Loading users…</div>
+        </div>
+      </div>
+
+      <!-- Stations -->
+      <div class="subview" id="view-stations">
+        <div class="page-hdr">
+          <div>
+            <div class="page-hdr-title">Charging Stations</div>
+            <div class="page-hdr-sub">Network status and slot availability</div>
+          </div>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Station</th>
+                <th>Status</th>
+                <th>Slots Available</th>
+                <th>Total Slots</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody id="stations-tbody">
+              <tr>
+                <td colspan="5" style="color:var(--text2);">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bookings -->
+      <div class="subview" id="view-bookings">
+        <div class="page-hdr">
+          <div>
+            <div class="page-hdr-title">All Bookings</div>
+            <div class="page-hdr-sub">Network-wide charging slot reservations</div>
+          </div>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Station</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="bookings-tbody">
+              <tr>
+                <td colspan="5" style="color:var(--text2);">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Campaigns -->
+      <div class="subview" id="view-campaigns">
+        <div class="page-hdr">
+          <div>
+            <div class="page-hdr-title">Ad Campaigns</div>
+            <div class="page-hdr-sub">Active advertiser campaigns across the network</div>
+          </div>
+        </div>
+        <div id="campaigns-list">
+          <div style="color:var(--text2);font-size:13px;">Loading campaigns…</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Auto-redirect: file:// se open karne par cookies kaam nahi karti, isliye server URL par redirect karo
+    if (window.location.protocol === 'file:') {
+      window.location.replace('http://localhost:3000/admin');
+    }
+
+    const ADMIN_EMAIL = 'pjiya4285@gmail.com';
+    const API_BASE = '/api';
+
+    let adminUser = null;
+
+    // ── Toast ──
+    function showToast(msg, type) {
+      const tc = document.getElementById('toastContainer');
+      const t = document.createElement('div');
+      t.className = 'toast ' + (type || 'info');
+      const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+      const iconColor = type === 'success' ? 'var(--blue-electric)' : type === 'error' ? 'var(--red)' : 'var(--blue)';
+      t.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '" style="color:' + iconColor + '"></i> ' + msg;
+      tc.appendChild(t);
+      setTimeout(function () { t.remove(); }, 4000);
+    }
+
+    // ── API ──
+    async function apiFetch(path, options) {
+      options = options || {};
+      const res = await fetch(API_BASE + path, {
+        method: options.method || 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: options.body ? JSON.stringify(options.body) : undefined
+      });
+      const data = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        const err = new Error(data.error || 'Request failed');
+        err.status = res.status;
+        throw err;
+      }
+      return data;
+    }
+
+    // ── Loading ──
+    function setLoading(show) {
+      document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+    }
+
+    // ── Session Check ──
+    async function checkSession() {
+      setLoading(true);
+      try {
+        const data = await apiFetch('/auth/me');
+        const user = data.user;
+        if (!user || !user.email || user.email.trim().toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+          await apiFetch('/auth/logout', { method: 'POST' }).catch(function () { });
+          showLoginScreen();
+          return;
+        }
+        adminUser = user;
+        showAdminPanel();
+        loadOverviewData();
+      } catch (err) {
+        showLoginScreen();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function toggleAdminPassVisibility() {
+      const inp = document.getElementById('admin-password');
+      const icon = document.getElementById('admin-pass-eye');
+      if (!inp) return;
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); }
+      } else {
+        inp.type = 'password';
+        if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }
+      }
+    }
+
+    async function quickAdminDemoLogin() {
+      setLoading(true);
+      const errEl = document.getElementById('login-error-msg');
+      if (errEl) errEl.style.display = 'none';
+
+      try {
+        const result = await apiFetch('/auth/demo-login', {
+          method: 'POST',
+          body: { role: 'admin' }
+        });
+
+        if (result && result.user) {
+          adminUser = result.user;
+          showToast('Welcome, Administrator!', 'success');
+          showAdminPanel();
+          loadOverviewData();
+        }
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = err.message || '1-Click sign-in failed. Please retry.';
+          errEl.style.display = 'block';
+        }
+        showToast(err.message || '1-Click sign-in failed', 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // ── Login ──
+    async function handleAdminLogin(event) {
+      event.preventDefault();
+      const errEl = document.getElementById('login-error-msg');
+      errEl.style.display = 'none';
+
+      const email = document.getElementById('admin-email').value.trim().toLowerCase();
+      const password = document.getElementById('admin-password').value;
+      const btn = document.getElementById('login-submit-btn');
+
+      // Client-side pre-check (UX only — real enforcement is server-side)
+      if (email !== ADMIN_EMAIL.toLowerCase()) {
+        errEl.textContent = 'Access denied. This portal is restricted to the EVIO administrator account only.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
+
+      try {
+        const result = await apiFetch('/auth/login', { method: 'POST', body: { email: email, password: password } });
+        const user = result.user;
+
+        // Server-side double-check
+        if (!user || !user.email || user.email.trim().toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+          await apiFetch('/auth/logout', { method: 'POST' }).catch(function () { });
+          errEl.textContent = 'Access denied. You are not authorized to access the admin panel.';
+          errEl.style.display = 'block';
+          return;
+        }
+
+        adminUser = user;
+        showToast('Welcome, Administrator!', 'success');
+        showAdminPanel();
+        loadOverviewData();
+
+      } catch (err) {
+        if (err.status === 403) {
+          errEl.textContent = 'Email not verified. Please verify via the main EVIO app first.';
+        } else if (err.status === 401) {
+          errEl.textContent = 'Invalid email or password. Please try again.';
+        } else {
+          errEl.textContent = err.message || 'Login failed. Please check your connection.';
+        }
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-lock-open"></i> Sign In to Admin Panel';
+      }
+    }
+
+    // ── Logout ──
+    async function adminLogout() {
+      try { await apiFetch('/auth/logout', { method: 'POST' }); } catch (e) { }
+      adminUser = null;
+      showLoginScreen();
+      showToast('Logged out successfully.', 'info');
+    }
+
+    // ── Forgot Password Logic ──
+    let fpEmail = '';
+    let fpOtp = '';
+
+    function openForgotPassword() {
+      const currentEmail = (document.getElementById('admin-email') ? document.getElementById('admin-email').value.trim() : '') || ADMIN_EMAIL;
+      document.getElementById('fp-email').value = currentEmail;
+      fpGoStep(1);
+      const backdrop = document.getElementById('fpBackdrop');
+      backdrop.style.display = 'flex';
+      initOtpInputs();
+    }
+
+    function closeForgotPassword() {
+      const backdrop = document.getElementById('fpBackdrop');
+      backdrop.style.display = 'none';
+    }
+
+    function fpGoStep(step) {
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById('fp-step-' + i);
+        if (el) el.classList.toggle('active', i === step);
+        const err = document.getElementById('fp-err-' + i);
+        if (err) { err.style.display = 'none'; err.textContent = ''; }
+      }
+      if (step === 2) {
+        const inputs = document.querySelectorAll('#fp-otp-boxes .otp-digit');
+        inputs.forEach(function (inp) { inp.value = ''; });
+        if (inputs[0]) inputs[0].focus();
+      } else if (step === 3) {
+        document.getElementById('fp-new-pass').value = '';
+        document.getElementById('fp-confirm-pass').value = '';
+        checkPassStrength('');
+      }
+    }
+
+    function showFpError(step, msg) {
+      const el = document.getElementById('fp-err-' + step);
+      if (el) {
+        el.textContent = msg;
+        el.style.display = 'block';
+      }
+    }
+
+    async function handleForgotPasswordSend(isResend) {
+      const emailInput = document.getElementById('fp-email');
+      fpEmail = (emailInput.value || '').trim().toLowerCase();
+      const errEl = document.getElementById('fp-err-1');
+      if (errEl) errEl.style.display = 'none';
+
+      if (!fpEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fpEmail)) {
+        showFpError(1, 'Please enter a valid email address.');
+        return;
+      }
+
+      const btn = document.getElementById('fp-send-btn');
+      const originalHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending code…';
+      }
+
+      try {
+        await apiFetch('/auth/forgot-password', {
+          method: 'POST',
+          body: { email: fpEmail }
+        });
+
+        document.getElementById('fp-email-display').textContent = fpEmail;
+        fpGoStep(2);
+        showToast(isResend ? 'Verification code resent!' : 'Verification code sent to ' + fpEmail, 'success');
+      } catch (err) {
+        showFpError(isResend ? 2 : 1, err.message || 'Failed to send reset code. Please try again.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      }
+    }
+
+    function initOtpInputs() {
+      const container = document.getElementById('fp-otp-boxes');
+      if (!container || container._hasInit) return;
+      container._hasInit = true;
+      const inputs = Array.from(container.querySelectorAll('.otp-digit'));
+
+      inputs.forEach(function (input, idx) {
+        input.addEventListener('input', function (e) {
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val ? val[0] : '';
+          if (val && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Backspace' && !input.value && idx > 0) {
+            inputs[idx - 1].focus();
+          } else if (e.key === 'Enter') {
+            handleForgotPasswordVerify();
+          }
+        });
+
+        input.addEventListener('paste', function (e) {
+          e.preventDefault();
+          const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+          pasteData.split('').forEach(function (char, i) {
+            if (inputs[i]) inputs[i].value = char;
+          });
+          if (pasteData.length === 6) {
+            inputs[5].focus();
+          } else if (inputs[pasteData.length]) {
+            inputs[pasteData.length].focus();
+          }
+        });
+      });
+    }
+
+    function handleForgotPasswordVerify() {
+      const inputs = document.querySelectorAll('#fp-otp-boxes .otp-digit');
+      let code = '';
+      inputs.forEach(function (inp) { code += inp.value.trim(); });
+
+      if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+        showFpError(2, 'Please enter the complete 6-digit verification code.');
+        return;
+      }
+
+      fpOtp = code;
+      fpGoStep(3);
+    }
+
+    function checkPassStrength(val) {
+      const bar = document.getElementById('fp-pass-bar');
+      const hint = document.getElementById('fp-pass-hint');
+      if (!bar || !hint) return;
+
+      if (!val) {
+        bar.style.width = '0%';
+        hint.textContent = '';
+        return;
+      }
+
+      var score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      if (val.length < 8) {
+        bar.style.width = '25%';
+        bar.style.background = 'var(--red)';
+        hint.textContent = 'Too short (min 8 characters)';
+        hint.style.color = 'var(--red)';
+      } else if (score <= 2) {
+        bar.style.width = '50%';
+        bar.style.background = 'var(--accent-warn)';
+        hint.textContent = 'Moderate strength';
+        hint.style.color = 'var(--accent-warn)';
+      } else {
+        bar.style.width = '100%';
+        bar.style.background = 'var(--blue-electric)';
+        hint.textContent = 'Strong password';
+        hint.style.color = 'var(--blue-electric)';
+      }
+    }
+
+    async function handleForgotPasswordReset() {
+      const newPass = (document.getElementById('fp-new-pass').value || '');
+      const confirmPass = (document.getElementById('fp-confirm-pass').value || '');
+
+      if (newPass.length < 8) {
+        showFpError(3, 'Password must be at least 8 characters long.');
+        return;
+      }
+      if (newPass !== confirmPass) {
+        showFpError(3, 'Passwords do not match.');
+        return;
+      }
+
+      const btn = document.getElementById('fp-reset-btn');
+      const originalHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting…';
+      }
+
+      try {
+        await apiFetch('/auth/reset-password', {
+          method: 'POST',
+          body: {
+            email: fpEmail,
+            otp: fpOtp,
+            newPassword: newPass
+          }
+        });
+
+        fpGoStep(4);
+        showToast('Password reset successfully! You can now log in.', 'success');
+      } catch (err) {
+        showFpError(3, err.message || 'Failed to reset password. Please check your OTP code.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      }
+    }
+
+    // ── Screen switch ──
+    function showLoginScreen() {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('admin-panel').style.display = 'none';
+      document.getElementById('admin-login-form').reset();
+      document.getElementById('login-error-msg').style.display = 'none';
+    }
+
+    function showAdminPanel() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      if (adminUser) {
+        const initial = (adminUser.name || 'A')[0].toUpperCase();
+        document.getElementById('admin-avatar-top').textContent = initial;
+        document.getElementById('admin-name-top').textContent = adminUser.name || 'Administrator';
+      }
+    }
+
+    // ── View navigation ──
+    const VIEW_TITLES = {
+      overview: 'Dashboard Overview', users: 'User Management',
+      stations: 'Charging Stations', bookings: 'All Bookings', campaigns: 'Ad Campaigns'
+    };
+
+    function showView(viewId) {
+      document.querySelectorAll('.subview').forEach(function (v) { v.classList.remove('active'); });
+      document.querySelectorAll('.sidebar-item').forEach(function (i) { i.classList.remove('active'); });
+      const view = document.getElementById('view-' + viewId);
+      if (view) view.classList.add('active');
+      const nav = document.getElementById('nav-' + viewId);
+      if (nav) nav.classList.add('active');
+      document.getElementById('topbar-title').textContent = VIEW_TITLES[viewId] || 'Admin Panel';
+      if (viewId === 'overview') loadOverviewData();
+      else if (viewId === 'users') loadUsers();
+      else if (viewId === 'stations') loadStations();
+      else if (viewId === 'bookings') loadBookings();
+      else if (viewId === 'campaigns') loadCampaigns();
+    }
+
+    // ── Data loaders ──
+    async function loadOverviewData() {
+      try {
+        const data = await apiFetch('/admin/stats');
+        document.getElementById('stat-sessions').textContent = data.activeSessions != null ? data.activeSessions : '—';
+        document.getElementById('stat-stations').textContent = data.totalStations != null ? data.totalStations : '—';
+        document.getElementById('stat-campaigns').textContent = data.activeAdvertisers != null ? data.activeAdvertisers : '—';
+        document.getElementById('stat-spend').textContent = data.totalSpendFormatted || '—';
+        const chartEl = document.getElementById('weekly-chart');
+        if (data.weeklyMwh && data.weeklyMwh.length) {
+          const max = Math.max.apply(null, data.weeklyMwh.map(function (d) { return d.height; }));
+          chartEl.innerHTML = data.weeklyMwh.map(function (d) {
+            return '<div class="chart-col"><div style="font-size:10px;color:var(--text3);font-weight:600;">' + d.mwh + '</div><div class="chart-bar" style="height:' + Math.round((d.height / max) * 80) + 'px;"></div><div class="chart-day">' + d.day + '</div></div>';
+          }).join('');
+        }
+      } catch (err) { handleApiError(err, 'overview stats'); }
+    }
+
+    async function loadUsers() {
+      const grid = document.getElementById('users-grid');
+      grid.innerHTML = '<div style="color:var(--text2);font-size:13px;">Loading…</div>';
+      try {
+        const data = await apiFetch('/admin/users');
+        const users = data.users || [];
+        if (!users.length) { grid.innerHTML = '<div style="color:var(--text2);font-size:13px;">No users found.</div>'; return; }
+        grid.innerHTML = users.map(function (u) {
+          const initial = (u.name || u.email || '?')[0].toUpperCase();
+          const isAdm = u.email && u.email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
+          return '<div class="user-card"><div class="user-ava">' + initial + '</div><div class="user-info"><div class="user-name">' + esc(u.name || '—') + '</div><div class="user-email">' + esc(u.email || '—') + '</div>' + (isAdm ? '<span class="badge badge-green" style="margin-top:4px;"><i class="fas fa-shield-alt"></i> Admin</span>' : '') + '</div></div>';
+        }).join('');
+      } catch (err) { grid.innerHTML = '<div style="color:var(--red);font-size:13px;">Failed to load users.</div>'; handleApiError(err, 'users'); }
+    }
+
+    async function loadStations() {
+      const tbody = document.getElementById('stations-tbody');
+      tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text2);">Loading…</td></tr>';
+      try {
+        const data = await apiFetch('/admin/stations');
+        const stations = data.stations || [];
+        if (!stations.length) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text2);">No stations.</td></tr>'; return; }
+        tbody.innerHTML = stations.map(function (s) {
+          const dotClass = s.status === 'available' ? 'dot-available' : s.status === 'busy' ? 'dot-busy' : 'dot-maintenance';
+          const badgeClass = s.status === 'available' ? 'badge-green' : s.status === 'busy' ? 'badge-gold' : 'badge-red';
+          return '<tr><td><strong>' + esc(s.name) + '</strong><br><span style="color:var(--text2);font-size:11px;">' + esc(s.address || '') + '</span></td><td><span class="badge ' + badgeClass + '"><span class="status-dot ' + dotClass + '"></span>' + esc(s.status) + '</span></td><td>' + (s.slotsAvail != null ? s.slotsAvail : '—') + '</td><td>' + (s.slotsTotal != null ? s.slotsTotal : '—') + '</td><td style="color:var(--text2);font-size:12px;">' + esc(s.type || '—') + '</td></tr>';
+        }).join('');
+      } catch (err) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--red);">Failed to load stations.</td></tr>'; handleApiError(err, 'stations'); }
+    }
+
+    async function loadBookings() {
+      const tbody = document.getElementById('bookings-tbody');
+      tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text2);">Loading…</td></tr>';
+      try {
+        const data = await apiFetch('/admin/bookings');
+        const bookings = data.bookings || [];
+        if (!bookings.length) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text2);">No bookings.</td></tr>'; return; }
+        tbody.innerHTML = bookings.map(function (b) {
+          const sc = b.status === 'Confirmed' ? 'badge-blue' : b.status === 'Completed' ? 'badge-green' : 'badge-muted';
+          return '<tr><td style="font-size:12px;color:var(--text2);">' + esc(b.id) + '</td><td><strong>' + esc(b.stationName) + '</strong><br><span style="font-size:11px;color:var(--text2);">' + esc(b.address || '') + '</span></td><td>' + esc(b.date || '—') + '</td><td style="font-size:12px;">' + esc(b.time || '—') + '</td><td><span class="badge ' + sc + '">' + esc(b.status) + '</span></td></tr>';
+        }).join('');
+      } catch (err) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--red);">Failed to load bookings.</td></tr>'; handleApiError(err, 'bookings'); }
+    }
+
+    async function loadCampaigns() {
+      const list = document.getElementById('campaigns-list');
+      list.innerHTML = '<div style="color:var(--text2);font-size:13px;">Loading…</div>';
+      try {
+        const data = await apiFetch('/campaigns');
+        const campaigns = data.campaigns || [];
+        if (!campaigns.length) { list.innerHTML = '<div style="color:var(--text2);font-size:13px;">No campaigns.</div>'; return; }
+        list.innerHTML = campaigns.map(function (c) {
+          return '<div class="campaign-card"><div class="campaign-info"><div class="campaign-name">' + esc(c.brand || c.name || '—') + '</div><div class="campaign-meta">' + esc(c.target || '') + ' · ' + Number(c.impressions || 0).toLocaleString() + ' impressions</div></div><div><div class="campaign-spend">₹' + Number(c.spend || 0).toLocaleString() + '</div><span class="badge ' + (c.active ? 'badge-green' : 'badge-muted') + '" style="float:right;margin-top:6px;">' + (c.active ? 'Active' : 'Paused') + '</span></div></div>';
+        }).join('');
+      } catch (err) { list.innerHTML = '<div style="color:var(--red);font-size:13px;">Failed to load campaigns.</div>'; handleApiError(err, 'campaigns'); }
+    }
+
+    function handleApiError(err, context) {
+      console.error('[Admin] Error loading ' + context + ':', err.message);
+      if (err.status === 401 || err.status === 403) {
+        showToast('Session expired or unauthorized. Logging out.', 'error');
+        adminLogout();
+      } else {
+        showToast('Error loading ' + context + ': ' + err.message, 'error');
+      }
+    }
+
+    function esc(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    window.addEventListener('DOMContentLoaded', checkSession);
+  </script>
+</body>
+
+</html>

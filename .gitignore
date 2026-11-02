@@ -1,0 +1,24 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Backup files
+*.bak
+
+# Logs
+*.log
+# Application data
+backend/data/*.json
+
+# Dependencies
+backend/node_modules/
